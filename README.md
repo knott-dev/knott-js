@@ -26,7 +26,7 @@ Edit and add this line into `package.json` file.
 
 ```bash
 "scripts": {
-  "dev": "parcel src/index.html",
+  "dev": "parcel views/index.html",
 },
 ```
 
