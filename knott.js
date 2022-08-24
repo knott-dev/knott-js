@@ -1,37 +1,75 @@
-export const craft = (
-  tagName, {
-    props = {},
-    text = "",
-    expand = []
-  }
-) => {
+/*
+ * Create Element API
+ * @param: {String}  tagName
+ * @param: {List}    props
+ * @param: {String}  text
+ * @param: {List}    expand
+ *
+ * (a) tagName : to create parent element known as <div>, <p>, or
+ * semantically elements as <profile-image>, <profile-avatar/> .
+ * (b) props : to create attributes as properties to an e.g.
+ * <div class="" id="" any=""></div> element.
+ * (c) expand : to create countless of child elements in a parent
+ * element in craft(), e.g. <div><p><a></a></p></div>.
+ * (d) text : to create text content to an element, e.g. <p>Text</p>.
+ * (e) slotComponent : to import external UI component with additionally
+ * to use `import {...} from "...";` from other component file.
+ *
+ * USAGE,
+ *
+ *    craft("tagName", {
+ *      props: {
+ *        id: "",
+ *        class: "",
+ *        title: "",
+ *        alt: "",
+ *        src: "",
+ *        href: "",
+ *        any: any
+ *      },
+ *      text: "",
+ *      expand: [
+ *        slotComponent,
+ *        craft(
+ *          ...
+ *          craft(...);
+ *          ...
+ *        );
+ *        ...
+ *      ]
+ *    );
+ */
+export const craft = ( tagName, { props = {}, text = "", expand = [] }) => {
   const virtualElement = Object.create(null);
-  Object.assign(virtualElement, {
-    tagName,
-    props,
-    text,
-    expand,
-  });
+  Object.assign(virtualElement, { tagName, props, text, expand, });
   return virtualElement;
 };
 
-// //////////////////////
-// //////////////////////
-
-const renderElement = ({
-  tagName,
-  props,
-  text,
-  expand
-}) => {
+/*
+ * Render API
+ * Render virtual (DOM) elements into real (DOM) elements.
+ *
+ * @param: {List}    virtual nodes (See, Create Element API)
+ *
+ * Usage,
+ *
+ *    const vNode = () => {
+ *      craft("div", {
+ *        props: {
+ *          class: "css classname",
+ *        }
+ *        text: "This is a Text!",
+ *      });
+ *    };
+ *
+ *    render(vNode());
+ */
+const renderElement = ({ tagName, props, text, expand }) => {
   const $element = document.createElement(tagName);
-  // set attribute (e.g. src, href, title, alt, etc.)
   for (const [pKey, pValue] of Object.entries(props)) {
     $element.setAttribute(pKey, pValue);
   }
-
   $element.innerText = text;
-
   for (const child of expand) {
     $element.appendChild(render(child));
   }
@@ -45,18 +83,41 @@ export const render = (virtualNode) => {
   return renderElement(virtualNode);
 };
 
-// //////////////////////
-// //////////////////////
-
+/*
+ * Mount API
+ * Deliver real (DOM) elements on the page visible on browser viewport.
+ * Note: New element has to mounted with id="".
+ *
+ * @param: {List}    virtual node (See, Create Element API)
+ * @param: {String}  target element id
+ *
+ * Usage,
+ *
+ *    const vNode = () => {
+ *      craft("div", {
+ *        props: {
+ *          id: "app",
+ *          class: "css-classname",
+ *        }
+ *        text: "This is a Text!",
+ *      });
+ *    };
+ *
+ *    mount(render(vNode()), "app");
+ */
 export const mount = (virtualNode, id) => {
   let app = document.getElementById(id);
   app.replaceWith(virtualNode);
   return virtualNode;
 };
 
-// //////////////////////
-// //////////////////////
-
+/*
+ * Diff API
+ * Calculate the differences between the two virtual trees.
+ *
+ * @param: {List}    old virtual node
+ * @param: {List}    new virtual node
+ */
 const compress = (xs, ys) => {
   const compressed = [];
   for (let i = 0; i < Math.min(xs.length, ys.length); i++) {
@@ -67,14 +128,12 @@ const compress = (xs, ys) => {
 
 const diffProps = (oldProps, newProps) => {
   const patches = [];
-  // setting newProps
   for (const [key, value] of Object.entries(newProps)) {
     patches.push(($node) => {
       $node.setAttribute(key, value);
       return $node;
     });
   }
-  // removing props
   for (const key in oldProps) {
     if (!(key in newProps)) {
       patches.push(($node) => {
@@ -105,8 +164,6 @@ const diffChildren = (oldVChildren, newVChildren) => {
   }
 
   return ($parent) => {
-    // since childPatches are expecting the $child, not $parent,
-    // we cannot just loop through them and call patch($parent)
     for (const [patch, $child] of compress(childPatches, $parent.childNodes)) {
       patch($child);
     }
@@ -118,40 +175,24 @@ const diffChildren = (oldVChildren, newVChildren) => {
 };
 
 export const diff = (oldVTree, newVTree) => {
-  // let's assume oldVTree is not undefined!
   if (newVTree === undefined) {
     return ($node) => {
       $node.remove();
-      // the patch should return the new root node.
-      // since there is none in this case,
-      // we will just return undefined.
       return undefined;
     };
   }
-
   if (typeof oldVTree === "string" || typeof newVTree === "string") {
     if (oldVTree !== newVTree) {
-      // could be 2 cases:
-      // 1. both trees are string and they have different values
-      // 2. one of the trees is text node and
-      //    the other one is elem node
-      // Either case, we will just render(newVTree)!
       return ($node) => {
         const $newNode = render(newVTree);
         $node.replaceWith($newNode);
         return $newNode;
       };
     } else {
-      // this means that both trees are string
-      // and they have the same values
       return ($node) => $node;
     }
   }
-
   if (oldVTree.tagName !== newVTree.tagName) {
-    // we assume that they are totally different and
-    // will not attempt to find the differences.
-    // simply render the newVTree and mount it.
     return ($node) => {
       const $newNode = render(newVTree);
       $node.replaceWith($newNode);
@@ -169,5 +210,3 @@ export const diff = (oldVTree, newVTree) => {
   };
 };
 
-// //////////////////////
-// //////////////////////

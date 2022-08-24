@@ -1,7 +1,7 @@
 {
   "name": "knott",
-  "version": "0.0.2",
-  "description": "A weightless micro web component library for the basic web.",
+  "version": "0.0.3",
+  "description": "A weightless javascript micro web component library for the basic web.",
   "main": "knott.js",
   "keywords": [
     "web-component",

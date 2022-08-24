@@ -101,7 +101,7 @@ craft(tagName, {
 });
 ```
 
-- `"tagName"` : to create parent element known as `<div>`, `<p>`, or semantically `<profile-image>` element.
+- `"tagName"` : to create parent element known as `<div>`, `<p>`, or semantically elements as `<profile-image>`, `<profile-avatar/>` .
 - `props {...}` : to create attributes as properties to an e.g. `<div class="" id="" any=""></div>` element.
 - `expand [...]` : to create countless of child elements in a parent element in `craft()`, e.g. `<div><p><a></a></p></div>`.
 - `text` : to create text content to an element, e.g. `<p>Text</p>`.
@@ -159,6 +159,8 @@ mount(render(ui()), "app");
 
 ```js
 // @file: `views/components/cards.js`
+import { craft } from "knott";
+
 const large = craft("div", {
   props {
     class: "width-64 height-64 text-xl-2 flex flex-center curve-border-lg shadow",
