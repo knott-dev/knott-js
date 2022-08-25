@@ -91,6 +91,7 @@ craft(tagName, {
     any: any
   },
   text = "",
+  actions: [...],
   expand = [
     slotComponent,
     craft(
@@ -104,6 +105,7 @@ craft(tagName, {
 - `"tagName"` : to create parent element known as `<div>`, `<p>`, or semantically elements as `<profile-image>`, `<profile-avatar/>` .
 - `props {...}` : to create attributes as properties to an e.g. `<div class="" id="" any=""></div>` element.
 - `expand [...]` : to create countless of child elements in a parent element in `craft()`, e.g. `<div><p><a></a></p></div>`.
+- `actions [...]` : to create event listener to an element.
 - `text` : to create text content to an element, e.g. `<p>Text</p>`.
 - `slotComponent` : to import external UI component with additionally to use `import {...} from "...";` from other component file.
 

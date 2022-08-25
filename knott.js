@@ -1,9 +1,10 @@
 /*
  * Create Element API
- * @param: {String}  tagName
- * @param: {List}    props
- * @param: {String}  text
- * @param: {List}    expand
+ * @param: {String} .... tagName
+ * @param: {List} ...... props
+ * @param: {String} .... text
+ * @param: {List} ...... actions
+ * @param: {List} ...... expand
  *
  * (a) tagName : to create parent element known as <div>, <p>, or
  * semantically elements as <profile-image>, <profile-avatar/> .
@@ -11,9 +12,11 @@
  * <div class="" id="" any=""></div> element.
  * (c) expand : to create countless of child elements in a parent
  * element in craft(), e.g. <div><p><a></a></p></div>.
- * (d) text : to create text content to an element, e.g. <p>Text</p>.
- * (e) slotComponent : to import external UI component with additionally
- * to use `import {...} from "...";` from other component file.
+ * (d) actions [...] : to create event listener to an element.
+ * (e) text : to create text content to an element, e.g. <p>Text</p>.
+ * (f) slotComponent : to import external component with additionally
+ * to use `import {...} from "...";` from other component file and,
+ * `expand: [...]` to expand further.
  *
  * USAGE,
  *
@@ -28,20 +31,18 @@
  *        any: any
  *      },
  *      text: "",
+        actions: [...],
  *      expand: [
  *        slotComponent,
- *        craft(
- *          ...
- *          craft(...);
- *          ...
- *        );
- *        ...
+ *        craft(...);
  *      ]
  *    );
  */
-export const craft = ( tagName, { props = {}, text = "", expand = [] }) => {
+export const craft = (
+  tagName, { props = {}, text = "", actions= [], expand = [] }
+) => {
   const virtualElement = Object.create(null);
-  Object.assign(virtualElement, { tagName, props, text, expand, });
+  Object.assign(virtualElement, { tagName, props, text, actions, expand, });
   return virtualElement;
 };
 
@@ -49,7 +50,7 @@ export const craft = ( tagName, { props = {}, text = "", expand = [] }) => {
  * Render API
  * Render virtual (DOM) elements into real (DOM) elements.
  *
- * @param: {List}    virtual nodes (See, Create Element API)
+ * @param: {List} ..... virtual nodes (See, Create Element API)
  *
  * Usage,
  *
@@ -64,12 +65,22 @@ export const craft = ( tagName, { props = {}, text = "", expand = [] }) => {
  *
  *    render(vNode());
  */
-const renderElement = ({ tagName, props, text, expand }) => {
+const renderElement = ({ tagName, props, text, actions, expand }) => {
+  // tagName
   const $element = document.createElement(tagName);
+  // props
   for (const [pKey, pValue] of Object.entries(props)) {
     $element.setAttribute(pKey, pValue);
   }
+  // text
   $element.innerText = text;
+  // actions
+  if (actions) {
+    actions.map(([type, event]) => {
+    $element.addEventListener(type, event)
+    })
+  }
+  // expand
   for (const child of expand) {
     $element.appendChild(render(child));
   }
@@ -84,12 +95,12 @@ export const render = (virtualNode) => {
 };
 
 /*
- * Mount API
+ * Mount (LifeCycle) API
  * Deliver real (DOM) elements on the page visible on browser viewport.
  * Note: New element has to mounted with id="".
  *
- * @param: {List}    virtual node (See, Create Element API)
- * @param: {String}  target element id
+ * @param: {List} .... virtual node (See, Create Element API)
+ * @param: {String} .. target element id
  *
  * Usage,
  *
@@ -112,11 +123,41 @@ export const mount = (virtualNode, id) => {
 };
 
 /*
+ * UnMount (LifeCycle) API
+ * Remove child (DOM) element from the page invisible on browser viewport.
+ *
+ * @param: {String} .... target element id
+ *
+ * Usage,
+ *    
+ *    // (?) this will render the element 
+ *    // and then clicked on the text, 
+ *    // this current element is removed.
+ *
+ *    const element = craft(
+ *      "div", { 
+ *        props: { 
+ *          id: "toBeRemoved",
+ *          class: "font-semibold"
+ *        },
+ *        text: "Dummy!"
+ *        actions: [["click", () => { unmount("tobeRemoved") }]]       
+ *    });
+ *
+ *    mount(render(element));
+ */
+export const unmount = (id) => {
+  let app = document.getElementById(id);
+  app.parentNode.removeChild(app);
+};
+
+/*
  * Diff API
  * Calculate the differences between the two virtual trees.
  *
- * @param: {List}    old virtual node
- * @param: {List}    new virtual node
+ * @param: {List} .... old virtual node
+ * @param: {List} .... new virtual node
+ *
  */
 const compress = (xs, ys) => {
   const compressed = [];
@@ -209,4 +250,5 @@ export const diff = (oldVTree, newVTree) => {
     return $node;
   };
 };
+
 
