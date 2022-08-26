@@ -5,70 +5,28 @@
  * @param: {String} .... text
  * @param: {List} ...... actions
  * @param: {List} ...... expand
- *
- * (a) tagName : to create parent element known as <div>, <p>, or
- * semantically elements as <profile-image>, <profile-avatar/> .
- * (b) props : to create attributes as properties to an e.g.
- * <div class="" id="" any=""></div> element.
- * (c) expand : to create countless of child elements in a parent
- * element in craft(), e.g. <div><p><a></a></p></div>.
- * (d) actions [...] : to create event listener to an element.
- * (e) text : to create text content to an element, e.g. <p>Text</p>.
- * (f) slotComponent : to import external component with additionally
- * to use `import {...} from "...";` from other component file and,
- * `expand: [...]` to expand further.
- *
- * USAGE,
- *
- *    craft("tagName", {
- *      props: {
- *        id: "",
- *        class: "",
- *        title: "",
- *        alt: "",
- *        src: "",
- *        href: "",
- *        any: any
- *      },
- *      text: "",
-        actions: [...],
- *      expand: [
- *        slotComponent,
- *        craft(...);
- *      ]
- *    );
  */
 export const craft = (
-  tagName, { props = {}, text = "", actions= [], expand = [] }
+  tagName, { props = {}, text = "", actions = [], expand = [] }
 ) => {
   const virtualElement = Object.create(null);
-  Object.assign(virtualElement, { tagName, props, text, actions, expand, });
+  Object.assign(virtualElement, {
+    tagName, props, text, actions, expand,
+  });
   return virtualElement;
 };
 
 /*
  * Render API
  * Render virtual (DOM) elements into real (DOM) elements.
- *
- * @param: {List} ..... virtual nodes (See, Create Element API)
- *
- * Usage,
- *
- *    const vNode = () => {
- *      craft("div", {
- *        props: {
- *          class: "css classname",
- *        }
- *        text: "This is a Text!",
- *      });
- *    };
- *
- *    render(vNode());
+ * @param: {List} .... virtual nodes (See, Create Element API)
  */
-const renderElement = ({ tagName, props, text, actions, expand }) => {
+const renderElement = (
+  { tagName, props, text, actions, expand }
+) => {
   // tagName
   const $element = document.createElement(tagName);
-  // props
+  // props (attributes)
   for (const [pKey, pValue] of Object.entries(props)) {
     $element.setAttribute(pKey, pValue);
   }
@@ -76,9 +34,14 @@ const renderElement = ({ tagName, props, text, actions, expand }) => {
   $element.innerText = text;
   // actions
   if (actions) {
-    actions.map(([type, event]) => {
-    $element.addEventListener(type, event)
-    })
+    actions.map(([mode, type, event]) => {
+      if (mode === "add") {
+        $element.addEventListener(type, event);
+      }
+      if (mode === "remove") {
+        $element.removeEventListener(type, event);
+      }
+    });
   }
   // expand
   for (const child of expand) {
@@ -98,66 +61,34 @@ export const render = (virtualNode) => {
  * Mount (LifeCycle) API
  * Deliver real (DOM) elements on the page visible on browser viewport.
  * Note: New element has to mounted with id="".
- *
- * @param: {List} .... virtual node (See, Create Element API)
- * @param: {String} .. target element id
- *
- * Usage,
- *
- *    const vNode = () => {
- *      craft("div", {
- *        props: {
- *          id: "app",
- *          class: "css-classname",
- *        }
- *        text: "This is a Text!",
- *      });
- *    };
- *
- *    mount(render(vNode()), "app");
+ * @param: {List} ...... virtual node (See, Create Element API)
+ * @param: {String} .... target element id
  */
 export const mount = (virtualNode, id) => {
-  let app = document.getElementById(id);
-  app.replaceWith(virtualNode);
-  return virtualNode;
+  let component = document.getElementById(id);
+  if (component) {
+    component.replaceWith(virtualNode);
+    return virtualNode;
+  }
 };
 
 /*
  * UnMount (LifeCycle) API
  * Remove child (DOM) element from the page invisible on browser viewport.
- *
  * @param: {String} .... target element id
- *
- * Usage,
- *    
- *    // (?) this will render the element 
- *    // and then clicked on the text, 
- *    // this current element is removed.
- *
- *    const element = craft(
- *      "div", { 
- *        props: { 
- *          id: "toBeRemoved",
- *          class: "font-semibold"
- *        },
- *        text: "Dummy!"
- *        actions: [["click", () => { unmount("tobeRemoved") }]]       
- *    });
- *
- *    mount(render(element));
  */
 export const unmount = (id) => {
-  let app = document.getElementById(id);
-  app.parentNode.removeChild(app);
+  let target = document.getElementById(id);
+  if (target) {
+    target.parentNode.removeChild(target);
+  }
 };
 
 /*
  * Diff API
  * Calculate the differences between the two virtual trees.
- *
  * @param: {List} .... old virtual node
  * @param: {List} .... new virtual node
- *
  */
 const compress = (xs, ys) => {
   const compressed = [];
@@ -250,5 +181,3 @@ export const diff = (oldVTree, newVTree) => {
     return $node;
   };
 };
-
-
