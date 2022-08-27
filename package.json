@@ -1,6 +1,6 @@
 {
   "name": "knott",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A weightless javascript micro web component library for the basic web.",
   "main": "knott.js",
   "keywords": [
@@ -8,7 +8,7 @@
     "virtual-dom",
     "vanilla-js"
   ],
-  "author": "Louis Low <iamlouislow@gmail.com>",
+  "author": "Louis Low <iamlouislow@gmail.com> (https://github.com/louislow81/knott.js)",
   "license": "MIT"
 }
 

@@ -63,11 +63,11 @@ const renderElement = (
   $element.innerText = text;
   // actions
   if (actions) {
-    actions.map(([mode, type, event]) => {
-      if (mode === "add") {
+    actions.map(([action, type, event]) => {
+      if (action === "add") {
         $element.addEventListener(type, event);
       }
-      if (mode === "remove") {
+      if (action === "remove") {
         $element.removeEventListener(type, event);
       }
     });
