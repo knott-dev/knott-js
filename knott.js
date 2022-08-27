@@ -7,13 +7,42 @@
  * @param: {List} ...... expand
  */
 export const craft = (
-  tagName, { props = {}, text = "", actions = [], expand = [] }
+  tagName, { 
+    props = {}, text = "", actions = [], expand = [] }
 ) => {
   const virtualElement = Object.create(null);
   Object.assign(virtualElement, {
     tagName, props, text, actions, expand,
   });
   return virtualElement;
+};
+
+/*
+ * Mount (LifeCycle) API
+ * Deliver real (DOM) elements on the page visible on browser viewport.
+ * Note: New virtual node has to be mounted with id="".
+ * @param: {List} ...... virtual node (See, Create Element API)
+ * @param: {String} .... target element id
+ */
+export const mount = (virtualNode, id) => {
+  let component = document.getElementById(id);
+  if (component) {
+    component.replaceWith(virtualNode);
+    return virtualNode;
+  }
+};
+
+/*
+ * UnMount (LifeCycle) API
+ * Remove child (DOM) element from the page invisible on browser
+ * viewport.
+ * @param: {String} .... target element id
+ */
+export const unmount = (id) => {
+  let target = document.getElementById(id);
+  if (target) {
+    target.parentNode.removeChild(target);
+  }
 };
 
 /*
@@ -55,33 +84,6 @@ export const render = (virtualNode) => {
     return document.createTextNode(virtualNode);
   }
   return renderElement(virtualNode);
-};
-
-/*
- * Mount (LifeCycle) API
- * Deliver real (DOM) elements on the page visible on browser viewport.
- * Note: New element has to mounted with id="".
- * @param: {List} ...... virtual node (See, Create Element API)
- * @param: {String} .... target element id
- */
-export const mount = (virtualNode, id) => {
-  let component = document.getElementById(id);
-  if (component) {
-    component.replaceWith(virtualNode);
-    return virtualNode;
-  }
-};
-
-/*
- * UnMount (LifeCycle) API
- * Remove child (DOM) element from the page invisible on browser viewport.
- * @param: {String} .... target element id
- */
-export const unmount = (id) => {
-  let target = document.getElementById(id);
-  if (target) {
-    target.parentNode.removeChild(target);
-  }
 };
 
 /*
@@ -181,3 +183,5 @@ export const diff = (oldVTree, newVTree) => {
     return $node;
   };
 };
+
+
