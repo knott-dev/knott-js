@@ -8,11 +8,18 @@
  */
 export const craft = (
   tagName, { 
-    props = {}, text = "", actions = [], expand = [] }
+    props = {}, 
+    text = "", 
+    actions = [], 
+    object = {},
+    logic = [],
+    disable = "", 
+    expand = [] 
+  }
 ) => {
   const virtualElement = Object.create(null);
   Object.assign(virtualElement, {
-    tagName, props, text, actions, expand,
+    tagName, props, text, actions, object, logic, disable, expand,
   });
   return virtualElement;
 };
@@ -24,7 +31,7 @@ export const craft = (
  * @param: {List} ...... virtual node (See, Create Element API)
  * @param: {String} .... target element id
  */
-export const mount = (virtualNode, id) => {
+export const mount = (id, virtualNode) => {
   let component = document.getElementById(id);
   if (component) {
     component.replaceWith(virtualNode);
@@ -51,7 +58,7 @@ export const unmount = (id) => {
  * @param: {List} .... virtual nodes (See, Create Element API)
  */
 const renderElement = (
-  { tagName, props, text, actions, expand }
+  { tagName, props, text, actions, object, logic, disable, expand }
 ) => {
   // tagName
   const $element = document.createElement(tagName);
@@ -59,16 +66,36 @@ const renderElement = (
   for (const [pKey, pValue] of Object.entries(props)) {
     $element.setAttribute(pKey, pValue);
   }
-  // text
-  $element.innerText = text;
+  // TODO:
+  if (typeof text === "string") {
+    $element.innerText = text;
+  }
+  if (typeof logic === "function") {
+    window.onload = () => {
+      console.log(logic);
+      return logic = [];
+    }
+  }
+  if (typeof object === "object") {
+    //console.log(object);
+  }
+  if (typeof disable === "boolean") {
+    console.log(disable);
+  }
   // actions
   if (actions) {
-    actions.map(([action, type, event]) => {
-      if (action === "add") {
+    actions.map(([mode, type, event]) => {
+      if (mode === "add") {
         $element.addEventListener(type, event);
       }
-      if (action === "remove") {
+      if (mode === "addWindow") {
+        window.addEventListener(type, event);
+      }
+      if (mode === "remove") {
         $element.removeEventListener(type, event);
+      }
+      if (mode === "removeWindow") {
+        window.removeEventListener(type, event);
       }
     });
   }
@@ -184,4 +211,8 @@ export const diff = (oldVTree, newVTree) => {
   };
 };
 
+// ///////////////////
+// UTILITIES
+// ///////////////////
 
+// TODO:
