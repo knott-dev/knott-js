@@ -1,25 +1,37 @@
 /*
  * Create Element API
- * @param: {String} .... tagName
+ * @param: {String} .... selector
  * @param: {List} ...... props
+ * @param: {String}..... style
  * @param: {String} .... text
+ * @param: {String} .... html
+ * @param: {List} ...... keys
+ * @param: {List} ...... data
  * @param: {List} ...... actions
+ * @param: {List} ...... tasks
+ * @param: {String} .... toggle
  * @param: {List} ...... expand
+ * @param: {Bool} ...... vdom
  */
 export const craft = (
-  tagName, { 
-    props = {}, 
-    text = "", 
-    actions = [], 
-    object = {},
-    logic = [],
-    disable = "", 
-    expand = [] 
+  selector, {
+    props = {},
+    style = "",
+    text = "",
+    html = ``,
+    keys = [],
+    data = [],
+    actions = [],
+    tasks = [],
+    toggle = "",
+    expand = [],
+    vdom = ""
   }
 ) => {
   const virtualElement = Object.create(null);
   Object.assign(virtualElement, {
-    tagName, props, text, actions, object, logic, disable, expand,
+    selector, props, style, text, html, keys,
+    data, actions, tasks, toggle, expand, vdom
   });
   return virtualElement;
 };
@@ -28,13 +40,13 @@ export const craft = (
  * Mount (LifeCycle) API
  * Deliver real (DOM) elements on the page visible on browser viewport.
  * Note: New virtual node has to be mounted with id="".
+ * @param: {String} .... target element id 
  * @param: {List} ...... virtual node (See, Create Element API)
- * @param: {String} .... target element id
  */
 export const mount = (id, virtualNode) => {
-  let component = document.getElementById(id);
-  if (component) {
-    component.replaceWith(virtualNode);
+  let addElement = document.getElementById(id);
+  if (addElement) {
+    addElement.replaceWith(virtualNode);
     return virtualNode;
   }
 };
@@ -46,9 +58,9 @@ export const mount = (id, virtualNode) => {
  * @param: {String} .... target element id
  */
 export const unmount = (id) => {
-  let target = document.getElementById(id);
-  if (target) {
-    target.parentNode.removeChild(target);
+  let removeElement = document.getElementById(id);
+  if (removeElement) {
+    removeElement.remove();
   }
 };
 
@@ -57,49 +69,75 @@ export const unmount = (id) => {
  * Render virtual (DOM) elements into real (DOM) elements.
  * @param: {List} .... virtual nodes (See, Create Element API)
  */
-const renderElement = (
-  { tagName, props, text, actions, object, logic, disable, expand }
-) => {
-  // tagName
-  const $element = document.createElement(tagName);
-  // props (attributes)
+const renderElement = ({
+  selector, props, style, text, html, keys,
+  data, actions, tasks, toggle, expand, vdom
+}) => {
+  const $element = document.createElement(selector);
+
   for (const [pKey, pValue] of Object.entries(props)) {
     $element.setAttribute(pKey, pValue);
   }
-  // TODO:
-  if (typeof text === "string") {
-    $element.innerText = text;
+
+  if (typeof style === "string") { $element.cssText = style; }
+
+  if (typeof text === "string") { $element.innerText = text; }
+
+  if (html) { $element.innerHTML = html; }
+
+  if (keys) {
+    keys.forEach((k) => {
+      if (data) {
+        data.forEach((i) => {
+          const t = document.createElement("div");
+          t.innerHTML = `${i[k]}`;
+          $element.appendChild(t);
+        });
+      }
+    });
   }
-  if (typeof logic === "function") {
-    window.onload = () => {
-      console.log(logic);
-      return logic = [];
-    }
-  }
-  if (typeof object === "object") {
-    //console.log(object);
-  }
-  if (typeof disable === "boolean") {
-    console.log(disable);
-  }
-  // actions
+
   if (actions) {
     actions.map(([mode, type, event]) => {
       if (mode === "add") {
         $element.addEventListener(type, event);
+        return;
       }
       if (mode === "addWindow") {
         window.addEventListener(type, event);
+        return;
       }
       if (mode === "remove") {
         $element.removeEventListener(type, event);
+        return;
       }
       if (mode === "removeWindow") {
         window.removeEventListener(type, event);
+        return;
       }
     });
   }
-  // expand
+
+  // TODO: tasks
+
+  if (toggle) {
+    $element.addEventListener("click", () => {
+      const toggleElement = document.getElementById(toggle);
+      if (toggleElement.style.display === "none") {
+        toggleElement.style.display = "block";
+        // fix missing element styles
+        toggleElement.removeAttribute("style");
+      } else {
+        toggleElement.style.display = "none";
+      }
+    });
+  }
+
+  // virtual DOM element properties
+  if (vdom === true) {
+    console.log("[knott]", $element);
+  }
+  // expand children node
   for (const child of expand) {
     $element.appendChild(render(child));
   }
@@ -163,7 +201,6 @@ const diffChildren = (oldVChildren, newVChildren) => {
       return $node;
     });
   }
-
   return ($parent) => {
     for (const [patch, $child] of compress(childPatches, $parent.childNodes)) {
       patch($child);
@@ -193,7 +230,7 @@ export const diff = (oldVTree, newVTree) => {
       return ($node) => $node;
     }
   }
-  if (oldVTree.tagName !== newVTree.tagName) {
+  if (oldVTree.selector !== newVTree.selector) {
     return ($node) => {
       const $newNode = render(newVTree);
       $node.replaceWith($newNode);
@@ -211,8 +248,4 @@ export const diff = (oldVTree, newVTree) => {
   };
 };
 
-// ///////////////////
-// UTILITIES
-// ///////////////////
 
-// TODO:
