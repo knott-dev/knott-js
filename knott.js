@@ -248,4 +248,17 @@ export const diff = (oldVTree, newVTree) => {
   };
 };
 
+/*
+ * Service Worker
+ */
+export const sw = () => {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("./sw.js")
+        .then((res) => console.log("[knott] service worker registered"))
+        .catch((err) => console.log("[knott] service worker not registered", err));
+    });
+  }
+}
 
