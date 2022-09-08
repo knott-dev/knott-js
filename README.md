@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="knott-logo.svg" width="200px" alt="Knott JS">
+  <img src="https://raw.githubusercontent.com/louislow81/knott.js/knott-logo.svg" width="200px" alt="Knott JS">
 </p>
 
 ## A weightless javascript micro web component library for the basic web.
