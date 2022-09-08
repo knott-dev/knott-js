@@ -52,7 +52,7 @@ craft(
 | **html** | _String_ | create first-render HTML element to an element, but **text** content will be disabled. |
 | **keys** | _List_ [...] | iterate objects in a JSON array append on an element from **data** objects. |
 | **data** | _Object_ [...] | add an array JSON object to an element. Use **keys** to select which object to iterate. |
-| **actions** | _List_ [...] | create event listener to an element to call function(s) when clicked. |
+| **actions** | _List_ [...] | create event listener to an element to call function(s) when clicked or onload. |
 | **tasks** | _List_ [...] | add on-demand function(s) call when the component is loaded. |
 | **toggle** | _String_ | show or hide target component with an element ID. |
 | **vdom** | _Boolean_ | add `true` to display virtual node objects in console. |
@@ -65,6 +65,10 @@ Create basic component with inline CSS properties.
 
 ```mjs
 craft("div", props: { style:"color-red" }, text: "Welcome!");
+```
+
+```mjs
+craft("top-header-container", html: `<div class="...">Welcome!</div>`);
 ```
 
 Create a component with children element within a parent element.
@@ -256,6 +260,65 @@ const panelA = craft(
 );
 
 export { panelA };
+```
+
+## Data Binding
+
+```mjs
+const newCard = (customCSS, customText) => 
+  craft("", {
+    props: {
+      class: customCSS,
+    },
+    text: customText,
+  });
+```
+
+```mjs
+const newCard = (customCSS, customText) => 
+  craft("", {
+    html: `
+      <div class=${customCSS}>
+        ${customText}
+      </div>
+    `,
+  });
+```
+
+## Iteration
+
+| Keys | Params | Descriptions |
+|:-|:-|:-|
+| **actions** | _List_ [...] | create event listener to an element to call function(s) when clicked or onload. |
+
+```mjs
+const images = [
+  { url: "https://example.com/example-one.png" },
+  { url: "https://example.com/example-two.png" },
+];
+
+const logos = () => craft("partner-logos", {
+  actions: [
+    ["addWindow", "load", ()=> {
+      // loop
+      images.forEach((item) => {
+        const l = document.createElement("div");
+        l.innerHTML = `
+          <img 
+            class="height-6 width-full filter drop-shadow-md" 
+            src="${item.url}"
+            alt=""
+            loading="lazy" 
+          />
+        `;
+        document
+          .querySelector("partner-logos")
+          .appendChild(l);
+      });
+      //...
+    }],
+  ]
+});
 ```
 
 ## Show/Hide Component with Click Handler

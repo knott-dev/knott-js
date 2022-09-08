@@ -249,16 +249,20 @@ export const diff = (oldVTree, newVTree) => {
 };
 
 /*
- * Service Worker
+ * Register Service Worker (PWA)
+ * Use SW to cache static assets for offline access.
+ * @params {List} .... service worker file `sw.js`
  */
-export const sw = () => {
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () {
-      navigator.serviceWorker
-        .register("./sw.js")
-        .then((res) => console.log("[knott] service worker registered"))
-        .catch((err) => console.log("[knott] service worker not registered", err));
-    });
+export const pwa = (swOption) => {
+  if(swOption === "true") {
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./sw.js")
+          .then((res) => console.log("knott service worker registered"))
+          .catch((err) => console.log("knott service worker not registered", err));
+      });
+    }
   }
 }
 
