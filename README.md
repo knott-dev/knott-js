@@ -54,7 +54,7 @@ craft(
 | **actions** | _List_ [...] | create event listener to an element to call function(s) when clicked or onload. |
 | **tasks** | _List_ [...] | add on-demand function(s) call when the component is loaded. |
 | **toggle** | _String_ | show or hide target component with an element ID. |
-| **vdom** | _Boolean_ | add `true` to display virtual node objects in console. |
+| **vdom** | _Boolean_ | set `true` to display virtual node objects in console. |
 | **slotComponent** | _function_ | import component file by using `import {...} from "...";`. | 
 | **customFunction**| _function_ | import custom function calls. |
 
@@ -356,6 +356,52 @@ const newModal = craft("div", {
     id: "modal",
   },
   text: "This is a Modal"
+});
+```
+
+## Service Worker
+
+Enable [PWA](https://web.dev/learn/pwa/) service worker to store app assets in browser for offline access.
+
+### Example
+
+Import `pwa()` module from `knott` and set parameter to `true`.
+
+```mjs
+// @file: app.js
+import { pwa } from "knott";
+
+pwa(true);
+```
+Create a new separate file named `sw.js` at the root of the project directory and, add below lines. Edit **CacheName** and **CacheAssets** to suit your need.
+
+```mjs
+// @file: {root_directory}/sw.js
+const cacheName = "knott-app-cache-version";
+
+const cacheAssets = [
+  "/",
+  "/index.html",
+  "/assets/app.js",
+  "/assets/app.css",
+];
+
+// BEYOND THIS LINE, DO NOT EDIT !!!
+
+self.addEventListener("install", installEvent => {
+  installEvent.waitUntil(
+    caches.open(cacheName).then(cache => {
+      cache.addAll(cacheAssets)
+    })
+  );
+});
+
+self.addEventListener("fetch", fetchEvent => {
+  fetchEvent.respondWith(
+    caches.match(fetchEvent.request).then(res => {
+      return res || fetch(fetchEvent.request)
+    })
+  );
 });
 ```
 
