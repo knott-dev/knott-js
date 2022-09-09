@@ -266,3 +266,77 @@ export const pwa = (swOption) => {
   }
 }
 
+/*
+ * DOM CSS Utilities
+ * @params {Bool} .... set true to enable DOM styling
+ */
+export const style = (enableDomStyle) => {
+  const cssUtilities = {
+    top: "top", bottom: "bottom", left: "left", right: "right",
+    width: "width", height: "height", padding: "padding",
+    paddingTop: "paddingTop", paddingBottom: "paddingBottom",
+    paddingLeft: "paddingLeft", paddingRight: "paddingRight",
+    margin: "margin", marginTop: "marginTop", marginBottom: "marginBottom",
+    marginLeft: "marginLeft", marginRight: "marginRight",
+    borderRadius: "borderRadius", fontSize: "fontSize",
+    lineHeight: "lineHeight", screenHeight: "height", textColor: "color",
+    bgColor: "backgroundColor", fontWeight: "fontWeight", display: "display",
+    flex: "flex", justifyContent: "justifyContent", alignItems: "alignItems",
+    flexWrap: "flexWrap", flexDirection: "flexDirection", filter: "filter",
+    position: "position", overflow: "overflow", listStyle: "listStyle",
+    objectFit: "objectFit", objectPosition: "objectPosition",
+    borderWidth: "borderWidth", borderStyle: "borderStyle",
+    borderColor: "borderColor", textAlign: "textAlign", fontStyle: "fontStyle"
+  };
+  
+  const observer = new MutationObserver((mutations, observer2) => {
+    mutations.forEach((mutation) => {
+      const target = mutation.target;
+      target.lastClassName !== target.className && styleElement(target);
+      target.lastClassName = target.className;
+    });
+  });
+  
+  const styleElement = (element) => {
+    const classNames = element && element.className && element.className.split(" ") || [];
+    classNames.forEach((className) => {
+      const style2 = generateDomStyle(className);
+      style2 && style2.key && (element.style[style2.key] = style2.value);
+    });
+  };
+  
+  const generateDomStyle = (className) => {
+    const chunks = className.match(/(^[a-z-A-Z]{1,23})-([a-z-0-9(%)%]{1,23})?/);
+    const cssProperty = chunks && cssUtilities[chunks[1]];
+    const unit = chunks && chunks[3] || "px";
+    const f = chunks[1];
+    // utilities without em, rem, px units
+    if (f === "textColor" || f === "bgColor" || f === "fw" || f === "display" || f === "justifyContent" || f === "alignItems" || f === "flexWrap" || f === "flexDirection" || f === "screenHeight" || f === "filter" || f === "position" || f === "objectFit" || f === "objectPosition" || f === "borderwidth" || f === "borderStyle" || f === "borderColor" || f === "textAlign" || f === "fontStyle") {
+      return cssProperty && {
+        key: cssProperty,
+        value: chunks[2]
+      };
+    }
+    // otherwise use unit
+    return cssProperty && {
+      key: cssProperty,
+      value: chunks[2] + unit
+    };
+  };
+  
+  if (enableDomStyle === true) {
+    const scope = window.document;
+    const elements = scope.getElementsByTagName("*");
+    for (let i in elements) {
+      const element = elements[i];
+      if (typeof element === "object") {
+        styleElement(element);
+        observer.observe(element, {
+          attributes: true,
+          attributeFilter: ["class"]
+        });
+      }
+    }
+  }
+};
+

@@ -358,6 +358,70 @@ const newModal = craft("div", {
   text: "This is a Modal"
 });
 ```
+## DOM Styling
+
+| Utility | CSS Class | DOM Styles | Usage |
+|:-|:-|:-|:-|
+|1| top | _style.top_ | top-**{px}** |
+|2| bottom | _style.bottom_ | bottom-**{px}** |
+|3| left | _style.left_ | left-**{px}** |
+|4| right | _style.right_ | right-**{px}** |
+|5| padding | _style.padding_ | padding-**{px}** |
+|6| paddingTop | _style.paddingTop_ | paddingTop-**{px}** |
+|7| paddingBottom | _style.paddingBottom_ | paddingBottom-**{px}** |
+|8| paddingLeft | _style.paddingLeft_ | paddingLeft-**{px}** |
+|9| paddingRight | _style.paddingRight_ | paddingRight-**{px}** |
+|10| margin | _style.margin_ | margin-**{px}** |
+|11| marginTop | _style.marginTop_ | marginTop-**{px}** |
+|12| marginBottom | _style.marginBottom_ | marginBottom-**{px}** |
+|13| marginLeft | _style.marginLeft_ | marginLeft-**{px}** |
+|14| marginRight | _style.marginRight_ | marginRight-**{px}** |
+|15| height | _style.height_ | height-**{px}** |
+|16| width | _style.width_ | width-**{px}** |
+|17| screenHeight | _style.height_ | screenHeight-**{vh,%}** |
+|18| fontSize | _style.fontSize_ | fontSize-**{px}** |
+|19| fontWeight | _style.fontWeight_ | fontWeight-**{n}** |
+|20| fontStyle | _style.fontStyle_ | fontStyle-**{n}** |
+|21| textColor | _style.color_ | textColor-**{n}** |
+|22| bgColor | _style.backgroundColor_ | bgColor-**{n}** |
+|23| borderRadius | _style.borderRadius_ | borderRadius-**{n}** |
+|24| lineHeight | _style.lineHeight_ | lineHeight-**{n}** |
+|25| display | _style.display_ | display-**{n}** |
+|26| flex | _style.flex_ | flex-**{n}** |
+|27| justifyContent | _style.justifyContent_ | justifyContent-**{n}** |
+|28| alignItems | _style.alignItems_ | alignItems-**{n}** |
+|29| flexWrap | _style.flexWrap_ | flexWrap-**{n}** |
+|30| flexDirection | _style.flexDirection_ | flexDirection-**{n}** |
+|31| filter | _style.filter_ | filter-**{n}** |
+|32| position | _style.position_ | position-**{n}** |
+|33| overflow | _style.overflow_ | overflow-**{n}** |
+|34| listStyle | _style.listStyle_ | listStyle-**{n}** |
+|35| objectFit | _style.objectFit_ | objectFit-**{n}** |
+|36| objectPosition | _style.objectPosition_ | objectPosition-**{n}** |
+|37| borderWidth | _style.borderWidth_ | borderWidth-**{n}** |
+|38| borderStyle | _style.borderStyle_ | borderStyle-**{n}** |
+|39| borderColor | _style.borderColor_ | borderColor-**{n}** |
+|40| textAlign | _style.textAlign_ | textAlign-**{n}** |
+
+```mjs
+import { style } from "knott";
+
+const main = craft(
+  "body", {
+    props: {
+      id: "root",
+      class: "display-flex justifyContent-center alignItems-center",
+    },
+    expand: [
+      // all the elements here in the child 
+      // are centered in the viewport.
+    ]
+  });
+
+mount("root", render(main));
+
+style(true); // should execute after the `mount()`
+```
 
 ## Service Worker
 
@@ -408,3 +472,4 @@ self.addEventListener("fetch", fetchEvent => {
 ---
 
 [MIT](https://github.com/louislow81/knottjs/blob/master/LICENSE)
+
