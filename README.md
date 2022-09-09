@@ -25,7 +25,7 @@ craft(
       style: "",
       // any...
     },
-    text: "TEXT",
+    text: "TEXT", or // `TEXT`,
     html: `<p></p>`,
     data: [{ a: "1" }, { a: "2" }],
     keys: ["A","B"],
@@ -265,21 +265,40 @@ export { panelA };
 ## Data Binding
 
 ```mjs
-const newCard = (customCSS, customText) => 
-  craft("", {
+const css = "font-bold";
+const text = "Welcome to Knott JS!";
+
+const newCard = (css, text) => 
+  craft("div", {
     props: {
-      class: customCSS,
+      class: css,
     },
-    text: customText,
+    text: text,
   });
 ```
 
 ```mjs
-const newCard = (customCSS, customText) => 
-  craft("", {
+const css = "font-bold";
+const text = "Knott JS!";
+
+const newCard = (css, text) => 
+  craft("div", {
+    props: {
+      class: `classA classB classC ${css}`,
+    },
+    text: `Welcome to ${text}`,
+  });
+```
+
+```mjs
+const css = "font-bold";
+const text = "Knott JS!";
+
+const newCard = (css, text) => 
+  craft("div", {
     html: `
-      <div class=${customCSS}>
-        ${customText}
+      <div class=${css}>
+        ${text}
       </div>
     `,
   });
