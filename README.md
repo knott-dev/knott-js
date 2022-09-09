@@ -25,7 +25,7 @@ craft(
       style: "",
       // any...
     },
-    text: "TEXT", or // `TEXT`,
+    text: "TEXT",
     html: `<p></p>`,
     data: [{ a: "1" }, { a: "2" }],
     keys: ["A","B"],
@@ -42,7 +42,6 @@ craft(
   }
 );
 ```
-
 | Keys | Params | Descriptions |
 |:-|:-|:-|
 | **selector** | _String_ | create new element (e.g. `<div>`, `<p>`), or semantically elements (e.g. `<profile-image>`, `<profile-avatar/>`). |

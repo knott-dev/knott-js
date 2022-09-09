@@ -254,7 +254,7 @@ export const diff = (oldVTree, newVTree) => {
  * @params {List} .... service worker file `sw.js`
  */
 export const pwa = (swOption) => {
-  if(swOption === "true") {
+  if(swOption === true) {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
