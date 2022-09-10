@@ -360,6 +360,8 @@ const newModal = craft("div", {
 ```
 ## DOM Styling
 
+Set `style()` to **true** to enable functional low-level CSS styling without writing CSS and no CSS payload. Up to 40 different type of useful utilities and each utility has countless modifier that allows you to fine-tuning the utility more precisely.
+
 | Utility | CSS Class | DOM Styles | Usage |
 |:-|:-|:-|:-|
 |1| top | _style.top_ | top-**{px}** |
