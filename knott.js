@@ -40,7 +40,7 @@ export const craft = (
  * Mount (LifeCycle) API
  * Deliver real (DOM) elements on the page visible on browser viewport.
  * Note: New virtual node has to be mounted with id="".
- * @param: {String} .... target element id 
+ * @param: {String} .... target element id
  * @param: {List} ...... virtual node (See, Create Element API)
  */
 export const mount = (id, virtualNode) => {
@@ -101,19 +101,15 @@ const renderElement = ({
     actions.map(([mode, type, event]) => {
       if (mode === "add") {
         $element.addEventListener(type, event);
-        return;
       }
       if (mode === "addWindow") {
         window.addEventListener(type, event);
-        return;
       }
       if (mode === "remove") {
         $element.removeEventListener(type, event);
-        return;
       }
       if (mode === "removeWindow") {
         window.removeEventListener(type, event);
-        return;
       }
     });
   }
@@ -251,7 +247,7 @@ export const diff = (oldVTree, newVTree) => {
 /*
  * Register Service Worker (PWA)
  * Use SW to cache static assets for offline access.
- * @params {List} .... service worker file `sw.js`
+ * @params {List} .... set `true` to enable, see file `sw.js`
  */
 export const pwa = (swOption) => {
   if(swOption === true) {
@@ -268,7 +264,8 @@ export const pwa = (swOption) => {
 
 /*
  * DOM CSS Utilities
- * @params {Bool} .... set true to enable DOM styling
+ * A functional low-level DOM CSS styler without CSS payload.
+ * @params {Bool} .... set `true` to enable DOM styling
  */
 export const style = (enableDomStyle) => {
   const cssUtilities = {
@@ -276,19 +273,22 @@ export const style = (enableDomStyle) => {
     width: "width", height: "height", padding: "padding",
     paddingTop: "paddingTop", paddingBottom: "paddingBottom",
     paddingLeft: "paddingLeft", paddingRight: "paddingRight",
-    margin: "margin", marginTop: "marginTop", marginBottom: "marginBottom",
-    marginLeft: "marginLeft", marginRight: "marginRight",
-    borderRadius: "borderRadius", fontSize: "fontSize",
-    lineHeight: "lineHeight", screenHeight: "height", textColor: "color",
-    bgColor: "backgroundColor", fontWeight: "fontWeight", display: "display",
-    flex: "flex", justifyContent: "justifyContent", alignItems: "alignItems",
-    flexWrap: "flexWrap", flexDirection: "flexDirection", filter: "filter",
+    margin: "margin", marginTop: "marginTop",
+    marginBottom: "marginBottom", marginLeft: "marginLeft",
+    marginRight: "marginRight", borderRadius: "borderRadius",
+    fontSize: "fontSize", lineHeight: "lineHeight",
+    screenHeight: "height", textColor: "color",
+    bgColor: "backgroundColor", fontWeight: "fontWeight",
+    display: "display", flex: "flex", justifyContent: "justifyContent",
+    alignItems: "alignItems", flexWrap: "flexWrap",
+    flexDirection: "flexDirection", filter: "filter",
     position: "position", overflow: "overflow", listStyle: "listStyle",
     objectFit: "objectFit", objectPosition: "objectPosition",
     borderWidth: "borderWidth", borderStyle: "borderStyle",
-    borderColor: "borderColor", textAlign: "textAlign", fontStyle: "fontStyle"
+    borderColor: "borderColor", textAlign: "textAlign",
+    fontStyle: "fontStyle",
   };
-  
+
   const observer = new MutationObserver((mutations, observer2) => {
     mutations.forEach((mutation) => {
       const target = mutation.target;
@@ -296,7 +296,7 @@ export const style = (enableDomStyle) => {
       target.lastClassName = target.className;
     });
   });
-  
+
   const styleElement = (element) => {
     const classNames = element && element.className && element.className.split(" ") || [];
     classNames.forEach((className) => {
@@ -304,26 +304,36 @@ export const style = (enableDomStyle) => {
       style2 && style2.key && (element.style[style2.key] = style2.value);
     });
   };
-  
+
   const generateDomStyle = (className) => {
-    const chunks = className.match(/(^[a-z-A-Z]{1,23})-([a-z-0-9(%)%]{1,23})?/);
-    const cssProperty = chunks && cssUtilities[chunks[1]];
-    const unit = chunks && chunks[3] || "px";
-    const f = chunks[1];
     // utilities without em, rem, px units
-    if (f === "textColor" || f === "bgColor" || f === "fw" || f === "display" || f === "justifyContent" || f === "alignItems" || f === "flexWrap" || f === "flexDirection" || f === "screenHeight" || f === "filter" || f === "position" || f === "objectFit" || f === "objectPosition" || f === "borderwidth" || f === "borderStyle" || f === "borderColor" || f === "textAlign" || f === "fontStyle") {
+    const notUnitUtils = [
+      "textColor", "bgColor", "display", "justifyContent",
+      "alignItems", "flexWrap", "flexDirection", "screenHeight",
+      "filter", "position", "objectFit", "objectPosition",
+      "borderwidth", "borderStyle", "borderColor", "textAlign",
+      "fontStyle", "listStyle",
+    ];
+
+    const classNameObjects = className.match(/(^[a-z-A-Z]{1,23})-([a-z-0-9(%)%]{1,23})?/);
+    const cssProperty = classNameObjects && cssUtilities[classNameObjects[1]];
+    const utilClassName = classNameObjects[1];
+    const utilClassValue = classNameObjects[2];
+    const unit = (classNameObjects && classNameObjects[3]) || "px" || "em";
+    // filter not unit utils
+    if (notUnitUtils.indexOf(utilClassName) > -1) {
       return cssProperty && {
         key: cssProperty,
-        value: chunks[2]
+        value: utilClassValue,
       };
     }
     // otherwise use unit
     return cssProperty && {
       key: cssProperty,
-      value: chunks[2] + unit
+      value: utilClassValue + unit,
     };
-  };
-  
+  }
+
   if (enableDomStyle === true) {
     const scope = window.document;
     const elements = scope.getElementsByTagName("*");

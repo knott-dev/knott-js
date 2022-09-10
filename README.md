@@ -2,11 +2,12 @@
   <img src="https://raw.githubusercontent.com/louislow81/knott.js/e832386075591d7ad4e42b7703e46836d2ca5988/knott-logo.svg" width="200px" alt="Knott JS">
 </p>
 
-## A weightless javascript micro web component library for the basic web.
+## A tiny Virtual DOM web component and styling library for the basic web.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/knott.svg)](https://badge.fury.io/js/knott)
 [![npm downloads](https://img.shields.io/npm/dm/knott.svg)](https://www.npmjs.com/package/knott)
+
 
 # Introduction
 
