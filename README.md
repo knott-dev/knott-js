@@ -12,6 +12,23 @@
 
 `Knott.JS` is a tiny **Virtual DOM** JavaScript library for creating object-based web components it's called **virtual nodes** with very basic necessary features to build a simple web application or website.
 
+# Menu
+
+- [Create Element](#craft)
+- [Virtual Node](#virtual-node)
+- [Create Component](#create-component)
+- [Import Component](#import-component)
+- [Event Listener](#event-listener)
+- [Mount Component](#mount-component)
+- [UnMount Component](#unmount-component)
+- [Data Binding](#data-binding)
+- [Iteration](#iteration)
+- [Show/Hide Component](#showhide-component-with-click-handler)
+- [DOM Styling](#dom-styling)
+- [Service Worker](#service-worker)
+
+---
+
 ## `craft`
 
 Use `craft()` to create virtual nodes commonly everywhere in the project. It takes a **selector** as a new element, **props** as attributes, **text** as string to put on the document, **html** to add custom _non-virtual-node_ element, optional **actions** as an event listener, **tasks** as custom function calls, and expands the array of children elements in the same node with **expand: [...]**. Read more details below.
