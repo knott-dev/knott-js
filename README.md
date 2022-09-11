@@ -19,6 +19,7 @@
 - [Virtual Node](#virtual-node)
 - [Create Component](#create-component)
 - [Import Component](#import-component)
+- [Component Properties](#component-properties)
 - [Event Listener](#event-listener)
 - [Mount Component](#mount-component)
 - [UnMount Component](#unmount-component)
@@ -30,32 +31,40 @@
 
 ---
 
+# Web Component
+
 ## `craft`
 
 Use `craft()` to create virtual nodes commonly everywhere in the project. It takes a **selector** as a new element, **props** as attributes, **text** as string to put on the document, **html** to add custom _non-virtual-node_ element, optional **actions** as an event listener, **tasks** as custom function calls, and expands the array of children elements in the same node with **expand: [...]**. Read more details below.
 
 ```mjs
+import { craft } from "knott";
+
 craft(
   selector, {
+    // attributes
     props {
       id: "",
       class: "",
       style: "",
       // any...
     },
+    // options
     text: "TEXT",
     html: `<p></p>`,
-    data: [{ a: "1" }, { a: "2" }],
+    data: [ { a: "1" }, { a: "2" } ],
     keys: ["A","B"],
-    toggle: "target-id",
+    toggle: "id",
+    hover: [ ["id"] ],
     actions: [
-      [action, event, ()=>{ f(); }],
+      [action, event, ()=>{ f() }],
     ],
     tasks: [ f() ],
     expand: [
       slotComponent,
       customFunction,
       craft(),
+      // and so on...
     ],
   }
 );
@@ -72,6 +81,7 @@ craft(
 | **actions** | _List_ [...] | create event listener to an element to call function(s) when clicked or onload. |
 | **tasks** | _List_ [...] | add on-demand function(s) call when the component is loaded. |
 | **toggle** | _String_ | show or hide target component with an element ID. |
+| **hover** | _List_ | mouse hover with `block` or `visibility` effects, add `opacity`, `duration`. More options (e.g. `[["id", "block", "0.8", "0.3s"]]`) |
 | **vdom** | _Boolean_ | set `true` to display virtual node objects in console. |
 | **slotComponent** | _function_ | import component file by using `import {...} from "...";`. |
 | **customFunction**| _function_ | import custom function calls. |
@@ -108,6 +118,7 @@ An virtual node with element is rendered into actual document to display on brow
 ### Example #1
 
 ```mjs
+// app.js
 import { craft, mount, render } from "knott";
 
 const vNode = craft(
@@ -127,6 +138,7 @@ mount("app", render(vNode));
 ### Example #2
 
 ```mjs
+// app.js
 import { craft, mount, render } from "knott";
 
 // Output as <div id="app">
@@ -142,10 +154,13 @@ mount("app", render(
   );
 ));
 ```
+
 ## Create Component
 
+Create new component named `largeCard` and export with the same example `largeCard` name.
+
 ```mjs
-// file: component-a.js
+// component-a.js
 import { craft } from "knott";
 
 const largeCard = craft(
@@ -159,10 +174,12 @@ export { largeCard };
 
 ## Import Component
 
+Import component file as module and reuse it anywhere in the project.
+
 ```mjs
-// file: main.js
+// app.js
 import { craft, mount, render } from "knott";
-import { largeCard } from "component-a";
+import { largeCard } from "component-a"; // as module.
 
 mount("root", render(
   craft("body", {
@@ -176,13 +193,37 @@ mount("root", render(
 ));
 ```
 
+## Component Properties
+
+Extend more options of a reusable component.
+
+```mjs
+// component
+const newComponent = (
+  // props
+  newId,
+  newStyle,
+  newContent
+) =>
+  // element
+  craft("div", {
+    props: { // attributes
+      id: newId,
+      class: newStyle,
+    },
+    // options
+    text: newContent,
+  });
+```
+
 ## Event Listener
 
 | Keys | Modes | Events | Calls |
 |:-|:-|:-|:-|
-| **actions** | add, remove, addWindow, removeWindow | https://developer.mozilla.org/en-US/docs/Web/Events | _Function_ |
+| **actions** | `add, remove, addWindow, removeWindow` | https://developer.mozilla.org/en-US/docs/Web/Events | _Function_ |
 
 ```mjs
+// component.js
 import { craft } from "knott";
 
 const alertButton = craft(
@@ -209,9 +250,9 @@ export { alertButton };
 An example to **display** additional component by using `mount()` when a text clicked with click handler `actions:[...]`.
 
 ```mjs
+// component.js
 import { craft, mount, render } from "knott";
 
-// main component
 const panelA = craft(
   "div", {
     props: {
@@ -248,9 +289,9 @@ export { panelA };
 An example to remove component or element node from DOM with `unmount()`.
 
 ```mjs
+// component.js
 import { craft, mount, unmount, render } from "knott";
 
-// main component
 const panelA = craft(
   "div", {
     text: "Click Me to remove Panel B",
@@ -281,7 +322,10 @@ export { panelA };
 
 ## Data Binding
 
+### Example #1
+
 ```mjs
+// component.js
 const css = "font-bold";
 const text = "Welcome to Knott JS!";
 
@@ -294,7 +338,10 @@ const newCard = (css, text) =>
   });
 ```
 
+### Example #2
+
 ```mjs
+// component.js
 const css = "font-bold";
 const text = "Knott JS!";
 
@@ -307,7 +354,10 @@ const newCard = (css, text) =>
   });
 ```
 
+### Example #3
+
 ```mjs
+// component.js
 const css = "font-bold";
 const text = "Knott JS!";
 
@@ -325,9 +375,10 @@ const newCard = (css, text) =>
 
 | Keys | Params | Descriptions |
 |:-|:-|:-|
-| **actions** | _List_ [...] | create event listener to an element to call function(s) when clicked or onload. |
+| **actions** | `[[mode, event, function]]` | create event listener to an element to call function(s) when clicked or onload. |
 
 ```mjs
+// component.js
 const images = [
   { url: "https://example.com/example-one.png" },
   { url: "https://example.com/example-two.png" },
@@ -361,9 +412,10 @@ const logos = () => craft("partner-logos", {
 
 | Keys | Params | Descriptions |
 |:-|:-|:-|
-| **toggle** | _String_ | show or hide target component with an element ID. |
+| **toggle** | `[id]` | show or hide target component with an element ID. |
 
 ```mjs
+// component.js
 const newButton = craft("button", {
   text: "Click Me!"
   toggle: "modal",
@@ -376,9 +428,29 @@ const newModal = craft("div", {
   text: "This is a Modal"
 });
 ```
+
+## Hover Effect
+
+| Keys | Params | Descriptions |
+|:-|:-|:-|
+| **hover** | `[[id, block or visibility, opacity, duration]]` | mouse hover with `block` or `visibility` effects, add `opacity`, `duration`. More options (e.g. `[["id", "block", "0.8", "0.3s"]]`) |
+
+```mjs
+// component.js
+const newButton = craft("button", {
+  props: {
+    id: "testButton"
+  }
+  text: "Hover Me!"
+  hover: [["testButton"]]],
+});
+```
+
+# Styling
+
 ## DOM Styling
 
-Set `style()` to **true** to enable functional low-level CSS styling without writing CSS and no CSS payload. Up to **50+ different** type of useful utilities and each utility has countless modifier that allows you to fine-tuning the utility more precisely.
+Set `style()` to **true** to enable functional low-level CSS styling **without writing CSS and no CSS payload.** Up to **50+ different** type of useful utilities and each utility has countless modifier that allows you to fine-tuning the utility more precisely.
 
 [Reference HTML DOM Style OBjects](https://www.w3schools.com/jsref/dom_obj_style.asp)
 
@@ -441,9 +513,25 @@ Set `style()` to **true** to enable functional low-level CSS styling without wri
 | xHeight | _style.height_ | [Reference](https://www.w3schools.com/jsref/prop_style_height.asp) |
 | xWidth | _style.width_ | [Reference](https://www.w3schools.com/jsref/prop_style_width.asp) |
 
-### Examples
+# CSS ClassName
+
+## `{classname}-{modifier}`
+
+Enable `style()` and set to `true` to use built-in DOM style CSS utilities.
+
+### Example #1
 
 ```mjs
+// app.js
+import { style } from "knott";
+
+style(true); // should execute after the `mount()`
+```
+
+### Example #2
+
+```mjs
+// app.js
 import { craft, mount, render, style } from "knott";
 
 const main = craft(
@@ -463,9 +551,12 @@ mount("root", render(main));
 style(true); // should execute after the `mount()`
 ```
 
-Create CSS style reset.
+### Example #3
+
+Create basic CSS style reset.
 
 ```mjs
+// app.js
 import { craft, mount, render, style } from "knott";
 
 const cssReset = `padding-0 margin-0 listStyle-none fontSize-16`;
@@ -487,6 +578,26 @@ mount("root", render(main));
 style(true); // should execute after the `mount()`
 ```
 
+### Example #4
+
+Create a group of complex style and reuse them anywhere in the project.
+
+```mjs
+// style.js
+const reset = "margin-0 padding-0 listStyle-none fontSize-16 textColor-black bgColor-white"; // normalizer
+
+const center = "display-flex justifyContent-center alignItems-center";
+const centerCol = `${center} flexDirection-column`;
+const centerRow = `${center} flexDirection-row`;
+
+const paddingWide = "paddingTop-60 paddingBottom-60 paddingLeft-20 paddingRight-20";
+
+// app.js
+import {
+  reset, center, centerCol, centerRow, paddingWide
+} from "./styler";
+```
+
 ## Service Worker
 
 Enable [PWA](https://web.dev/learn/pwa/) service worker to store app assets in browser for offline access.
@@ -496,7 +607,7 @@ Enable [PWA](https://web.dev/learn/pwa/) service worker to store app assets in b
 Import `pwa()` module from `knott` and set parameter to `true`.
 
 ```mjs
-// @file: app.js
+// app.js
 import { pwa } from "knott";
 
 pwa(true);
@@ -504,7 +615,7 @@ pwa(true);
 Create a new separate file named `sw.js` at the root of the project directory and, add below lines. Edit **CacheName** and **CacheAssets** to suit your need.
 
 ```mjs
-// @file: {root_directory}/sw.js
+// {root_directory}/sw.js
 const cacheName = "knott-app-cache-version";
 
 const cacheAssets = [
