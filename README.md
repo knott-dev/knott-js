@@ -38,7 +38,7 @@ Use `craft()` to create virtual nodes commonly everywhere in the project. It tak
 craft(
   selector, {
     props {
-      id: "", 
+      id: "",
       class: "",
       style: "",
       // any...
@@ -73,7 +73,7 @@ craft(
 | **tasks** | _List_ [...] | add on-demand function(s) call when the component is loaded. |
 | **toggle** | _String_ | show or hide target component with an element ID. |
 | **vdom** | _Boolean_ | set `true` to display virtual node objects in console. |
-| **slotComponent** | _function_ | import component file by using `import {...} from "...";`. | 
+| **slotComponent** | _function_ | import component file by using `import {...} from "...";`. |
 | **customFunction**| _function_ | import custom function calls. |
 
 ## Examples
@@ -220,7 +220,7 @@ const panelA = craft(
     text: "This is Panel A. Click Me!",
     actions: [
       ["add", "click", ()=> { // or
-        mount("idPanelA", render(panelB)); 
+        mount("idPanelA", render(panelB));
       }],
     ],
     tasks: [ // or
@@ -255,7 +255,7 @@ const panelA = craft(
   "div", {
     text: "Click Me to remove Panel B",
     actions: [ // or
-      ["add", "click", ()=> { 
+      ["add", "click", ()=> {
         unmount("idPanelB");
       }],
     ],
@@ -285,7 +285,7 @@ export { panelA };
 const css = "font-bold";
 const text = "Welcome to Knott JS!";
 
-const newCard = (css, text) => 
+const newCard = (css, text) =>
   craft("div", {
     props: {
       class: css,
@@ -298,7 +298,7 @@ const newCard = (css, text) =>
 const css = "font-bold";
 const text = "Knott JS!";
 
-const newCard = (css, text) => 
+const newCard = (css, text) =>
   craft("div", {
     props: {
       class: `classA classB classC ${css}`,
@@ -311,7 +311,7 @@ const newCard = (css, text) =>
 const css = "font-bold";
 const text = "Knott JS!";
 
-const newCard = (css, text) => 
+const newCard = (css, text) =>
   craft("div", {
     html: `
       <div class=${css}>
@@ -340,11 +340,11 @@ const logos = () => craft("partner-logos", {
       images.forEach((item) => {
         const l = document.createElement("div");
         l.innerHTML = `
-          <img 
-            class="height-6 width-full filter drop-shadow-md" 
+          <img
+            class="height-6 width-full filter drop-shadow-md"
             src="${item.url}"
             alt=""
-            loading="lazy" 
+            loading="lazy"
           />
         `;
         document
@@ -378,53 +378,73 @@ const newModal = craft("div", {
 ```
 ## DOM Styling
 
-Set `style()` to **true** to enable functional low-level CSS styling without writing CSS and no CSS payload. Up to 40 different type of useful utilities and each utility has countless modifier that allows you to fine-tuning the utility more precisely.
+Set `style()` to **true** to enable functional low-level CSS styling without writing CSS and no CSS payload. Up to **50+ different** type of useful utilities and each utility has countless modifier that allows you to fine-tuning the utility more precisely.
 
-| Utility | CSS Class | DOM Styles | Usage |
-|:-|:-|:-|:-|
-|1| top | _style.top_ | top-**{px}** |
-|2| bottom | _style.bottom_ | bottom-**{px}** |
-|3| left | _style.left_ | left-**{px}** |
-|4| right | _style.right_ | right-**{px}** |
-|5| padding | _style.padding_ | padding-**{px}** |
-|6| paddingTop | _style.paddingTop_ | paddingTop-**{px}** |
-|7| paddingBottom | _style.paddingBottom_ | paddingBottom-**{px}** |
-|8| paddingLeft | _style.paddingLeft_ | paddingLeft-**{px}** |
-|9| paddingRight | _style.paddingRight_ | paddingRight-**{px}** |
-|10| margin | _style.margin_ | margin-**{px}** |
-|11| marginTop | _style.marginTop_ | marginTop-**{px}** |
-|12| marginBottom | _style.marginBottom_ | marginBottom-**{px}** |
-|13| marginLeft | _style.marginLeft_ | marginLeft-**{px}** |
-|14| marginRight | _style.marginRight_ | marginRight-**{px}** |
-|15| height | _style.height_ | height-**{px}** |
-|16| width | _style.width_ | width-**{px}** |
-|17| screenHeight | _style.height_ | screenHeight-**{vh,%}** |
-|18| fontSize | _style.fontSize_ | fontSize-**{px}** |
-|19| fontWeight | _style.fontWeight_ | fontWeight-**{n}** |
-|20| fontStyle | _style.fontStyle_ | fontStyle-**{n}** |
-|21| textColor | _style.color_ | textColor-**{n}** |
-|22| bgColor | _style.backgroundColor_ | bgColor-**{n}** |
-|23| borderRadius | _style.borderRadius_ | borderRadius-**{n}** |
-|24| lineHeight | _style.lineHeight_ | lineHeight-**{n}** |
-|25| display | _style.display_ | display-**{n}** |
-|26| flex | _style.flex_ | flex-**{n}** |
-|27| justifyContent | _style.justifyContent_ | justifyContent-**{n}** |
-|28| alignItems | _style.alignItems_ | alignItems-**{n}** |
-|29| flexWrap | _style.flexWrap_ | flexWrap-**{n}** |
-|30| flexDirection | _style.flexDirection_ | flexDirection-**{n}** |
-|31| filter | _style.filter_ | filter-**{n}** |
-|32| position | _style.position_ | position-**{n}** |
-|33| overflow | _style.overflow_ | overflow-**{n}** |
-|34| listStyle | _style.listStyle_ | listStyle-**{n}** |
-|35| objectFit | _style.objectFit_ | objectFit-**{n}** |
-|36| objectPosition | _style.objectPosition_ | objectPosition-**{n}** |
-|37| borderWidth | _style.borderWidth_ | borderWidth-**{n}** |
-|38| borderStyle | _style.borderStyle_ | borderStyle-**{n}** |
-|39| borderColor | _style.borderColor_ | borderColor-**{n}** |
-|40| textAlign | _style.textAlign_ | textAlign-**{n}** |
+[Reference HTML DOM Style OBjects](https://www.w3schools.com/jsref/dom_obj_style.asp)
+
+> Belows are supported DOM style objects.
+
+| Utility | DOM Style Objects | Usage |
+:-|:-|:-|
+| alignItems | _style.alignItems_ | 0px |
+| bgColor | _style.backgroundColor_ | rgba(0,0,0,0) |
+| borderColor | _style.borderColor_ | rgba(0,0,0,0) |
+| borderRadius | _style.borderRadius_ | 0px |
+| borderStyle | _style.borderStyle_ | [Reference](https://www.w3schools.com/jsref/prop_style_borderstyle.asp) |
+| borderWidth | _style.borderWidth_ | 0px |
+| bottom | _style.bottom_ | 0px |
+| clear | _style.clear_ | [Reference](https://www.w3schools.com/jsref/prop_style_clear.asp) |
+| cursor | _style.cursor_ | [Reference](https://www.w3schools.com/jsref/prop_style_cursor.asp) |
+| display | _style.display_ | [Reference](https://www.w3schools.com/jsref/prop_style_display.asp) |
+| filter | _style.filter_ | [Filter](https://www.w3schools.com/jsref/prop_style_filter.asp) |
+| flexDirection | _style.flexDirection_ | [Reference](https://www.w3schools.com/jsref/prop_style_flexdirection.asp) |
+| flex | _style.flex_ | [Reference](https://www.w3schools.com/jsref/prop_style_flex.asp) |
+| flexWrap | _style.flexWrap_ | [Reference](https://www.w3schools.com/jsref/prop_style_flexwrap.asp) |
+| font | _style.fontFamily_ | [Reference](https://www.w3schools.com/jsref/prop_style_fontfamily.asp) |
+| fontSize | _style.fontSize_ | 0px |
+| fontStyle | _style.fontStyle_ | [Reference](https://www.w3schools.com/jsref/prop_style_fontstyle.asp) |
+| fontWeight | _vfontWeight_ | [Reference](https://www.w3schools.com/jsref/prop_style_fontweight.asp) |
+| height | _style.height_ | [Reference](https://www.w3schools.com/jsref/prop_style_height.asp) |
+| justifyContent | _style.justifyContent_ | [Reference](https://www.w3schools.com/jsref/prop_style_justifycontent.asp) |
+| left | _style.left_ | 0px |
+| lineHeight | _style.lineHeight_ | 0px |
+| listStyle | _style.listStyle_ | [Reference](https://www.w3schools.com/jsref/prop_style_liststyle.asp) |
+| marginBottom | _marginBottom_ | 0px |
+| marginLeft | _style.marginLeft_ | 0px |
+| margin | _style.margin_ | 0px |
+| marginRight | _style.marginRight_ | 0px |
+| marginTop | _style.marginTop_ | 0px |
+| objectFit | _style.objectFit_ | [Reference](https://www.w3schools.com/jsref/prop_style_objectfit.asp) |
+| objectPosition | _style.objectPosition_ | [Reference](https://www.w3schools.com/jsref/prop_style_objectposition.asp) |
+| opacity | _style.opacity_ | [Opacity](https://www.w3schools.com/jsref/prop_style_opacity.asp) |
+| overflow | _style.overflow_ | [Reference](https://www.w3schools.com/jsref/prop_style_overflow.asp) |
+| paddingBottom | _style.paddingBottom_ | 0px |
+| paddingLeft | _style.paddingLeft_ | 0px |
+| padding | _style.padding_ | 0px |
+| paddingRight | _style.paddingRight_ | 0px |
+| paddingTop | _style.paddingTop_ | 0px |
+| position | _style.position_ | [Reference](https://www.w3schools.com/jsref/prop_style_position.asp) |
+| right | _style.right_ | 0px |
+| textAlign | _style.textAlign_ | [Reference](https://www.w3schools.com/jsref/prop_style_textalign.asp) |
+| textColor | _style.color_ | rgba(0,0,0,0) |
+| textDecoration | _style.textDecoration_ | [Reference](https://www.w3schools.com/jsref/prop_style_textdecoration.asp) |
+| textDecorationColor | _style.textDecorationColor | [Reference](https://www.w3schools.com/jsref/prop_style_textdecorationcolor.asp) |
+| textOverflow | _style.textOverflow_ | [Reference](https://www.w3schools.com/jsref/prop_style_textoverflow.asp) |
+| textTransform | _style.textTransform_ | [Reference](https://www.w3schools.com/jsref/prop_style_texttransform.asp) |
+| top | _style.top_ | 0px |
+| transition | _style.transition_ | [Reference](https://www.w3schools.com/jsref/prop_style_transition.asp) |
+| userSelect | _style.userSelect_ | [Reference](https://www.w3schools.com/jsref/prop_style_userselect.asp) |
+| visibility | _style.visibility_ | [Reference](https://www.w3schools.com/jsref/prop_style_visibility.asp) |
+| whiteSpace | _style.whiteSpace_ | [Reference](https://www.w3schools.com/jsref/prop_style_whitespace.asp) |
+| width | _style.width_ | 0px |
+| wordWrap | _style.wordWrap_ | [Reference](https://www.w3schools.com/jsref/prop_style_wordwrap.asp) |
+| xHeight | _style.height_ | [Reference](https://www.w3schools.com/jsref/prop_style_height.asp) |
+| xWidth | _style.width_ | [Reference](https://www.w3schools.com/jsref/prop_style_width.asp) |
+
+### Examples
 
 ```mjs
-import { style } from "knott";
+import { craft, mount, render, style } from "knott";
 
 const main = craft(
   "body", {
@@ -433,7 +453,31 @@ const main = craft(
       class: "display-flex justifyContent-center alignItems-center",
     },
     expand: [
-      // all the elements here in the child 
+      // all the elements here in the child
+      // are centered in the viewport.
+    ]
+  });
+
+mount("root", render(main));
+
+style(true); // should execute after the `mount()`
+```
+
+Create CSS style reset.
+
+```mjs
+import { craft, mount, render, style } from "knott";
+
+const cssReset = `padding-0 margin-0 listStyle-none fontSize-16`;
+
+const main = craft(
+  "body", {
+    props: {
+      id: "root",
+      class: `${cssReset} display-flex justifyContent-center alignItems-center`,
+    },
+    expand: [
+      // all the elements here in the child
       // are centered in the viewport.
     ]
   });

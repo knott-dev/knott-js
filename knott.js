@@ -10,6 +10,7 @@
  * @param: {List} ...... actions
  * @param: {List} ...... tasks
  * @param: {String} .... toggle
+ * @param: {List} ...... hover
  * @param: {List} ...... expand
  * @param: {Bool} ...... vdom
  */
@@ -18,20 +19,29 @@ export const craft = (
     props = {},
     style = "",
     text = "",
-    html = ``,
-    keys = [],
-    data = [],
+    // options
     actions = [],
     tasks = [],
     toggle = "",
+    hover = [],
+    vdom = "",
+    // data
+    keys = [],
+    data = [],
+    // child
+    html = ``,
     expand = [],
-    vdom = ""
   }
 ) => {
   const virtualElement = Object.create(null);
   Object.assign(virtualElement, {
-    selector, props, style, text, html, keys,
-    data, actions, tasks, toggle, expand, vdom
+    selector, props, style, text, 
+    // options
+    actions, tasks, toggle, hover, vdom,
+    // data
+    keys, data, 
+    // child
+    html, expand,
   });
   return virtualElement;
 };
@@ -70,33 +80,62 @@ export const unmount = (id) => {
  * @param: {List} .... virtual nodes (See, Create Element API)
  */
 const renderElement = ({
-  selector, props, style, text, html, keys,
-  data, actions, tasks, toggle, expand, vdom
+  selector, props, style, text, 
+  // options
+  actions, tasks, toggle, hover, vdom,
+  // data
+  keys, data, 
+  // child
+  html, expand,
 }) => {
   const $element = document.createElement(selector);
-
+  /*
+   * Element Attributes
+   * @params {List} .... usage, props: { class: `` } 
+   * @note: use `` for data binding
+   */
   for (const [pKey, pValue] of Object.entries(props)) {
     $element.setAttribute(pKey, pValue);
   }
-
+  /*
+   * Element Style
+   * @params {String} .... usage, style: ``,
+   * @note: use `` for data binding
+   */
   if (typeof style === "string") { $element.cssText = style; }
-
+  /*
+   * Element Text
+   * @params {String} .... usage, text: ``,
+   * @note: use `` for data binding
+   */
   if (typeof text === "string") { $element.innerText = text; }
-
+  /*
+   * Element Child HTML
+   * @params {String} .... usage, html: ``,
+   * @note: use `` for data binding
+   */
   if (html) { $element.innerHTML = html; }
-
+  /*
+   * (Element Child) Object Keys
+   * @params {List} ...... object ref. of `data: [{...}]`
+   */
   if (keys) {
     keys.forEach((k) => {
       if (data) {
         data.forEach((i) => {
-          const t = document.createElement("div");
-          t.innerHTML = `${i[k]}`;
-          $element.appendChild(t);
+          const ky = document.createElement("div")
+          ky.innerHTML = `${i[k]}`;
+          $element.appendChild(ky);
         });
       }
     });
   }
-
+  /*
+   * Element Actions
+   * @params {mode} ...... event mode
+   * @params {type} ...... event listener
+   * @params {event} ..... function calls
+   */
   if (actions) {
     actions.map(([mode, type, event]) => {
       if (mode === "add") {
@@ -113,23 +152,59 @@ const renderElement = ({
       }
     });
   }
-
-  // TODO: tasks
-
+  /*
+   * Element Toggle
+   * @params {id} ...... element id
+   */
   if (toggle) {
     $element.addEventListener("click", () => {
-      const toggleElement = document.getElementById(toggle);
-      if (toggleElement.style.display === "none") {
-        toggleElement.style.display = "block";
+      const t = document.getElementById(toggle);
+      if (t.style.display === "none") {
+        t.style.display = "block";
         // fix missing element styles
-        toggleElement.removeAttribute("style");
+        t.removeAttribute("style");
       } else {
-        toggleElement.style.display = "none";
+        t.style.display = "none";
       }
     });
   }
-
-  // virtual DOM element properties
+  /*
+   * Element Hover
+   * @params {id} .......... element id
+   * @params {mode} ........ set `block` or `visible` style
+   * @params {opacity} ..... value 0.9 to 1
+   * @params {duration} .... transition time 0.1s to 1s
+   */
+  if (hover) {
+    hover.map(([id, mode = "block",  opacity = "0.6", duration = "0.3s"]) => {
+      if(mode === "block") {
+        $element.addEventListener("mouseover", () => {
+          const bmo = document.getElementById(id);
+          bmo.style.display = mode;
+          bmo.style.opacity = opacity;
+          bmo.style.transition = duration;
+        });
+        $element.addEventListener("mouseout", () => {
+          const bmot = document.getElementById(id);
+          bmot.style.opacity = "1";
+        });
+      }
+      if(mode === "visible") {
+        $element.addEventListener("mouseover", () => {
+          const vmo = document.getElementById(id);
+          vmo.style.visibility = mode;
+        });
+        $element.addEventListener("mouseout", () => {
+          const vmot = document.getElementById(id);
+          vmot.style.visibility = "hidden";
+        });
+      }
+    });
+  }
+  /*
+   * Element DOM Properties
+   * @params {Bool} ...... set `true` to display on console
+   */
   if (vdom === true) {
     console.log("[knott]", $element);
   }
@@ -141,9 +216,6 @@ const renderElement = ({
 };
 
 export const render = (virtualNode) => {
-  if (typeof virtualNode === "string") {
-    return document.createTextNode(virtualNode);
-  }
   return renderElement(virtualNode);
 };
 
@@ -249,14 +321,14 @@ export const diff = (oldVTree, newVTree) => {
  * Use SW to cache static assets for offline access.
  * @params {List} .... set `true` to enable, see file `sw.js`
  */
-export const pwa = (swOption) => {
-  if(swOption === true) {
+export const pwa = (enableSW) => {
+  if(enableSW === true) {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
           .register("./sw.js")
-          .then((res) => console.log("knott service worker registered"))
-          .catch((err) => console.log("knott service worker not registered", err));
+          .then((res) => console.log("service worker registered"))
+          .catch((err) => console.log("service worker not registered", err));
       });
     }
   }
@@ -268,25 +340,96 @@ export const pwa = (swOption) => {
  * @params {Bool} .... set `true` to enable DOM styling
  */
 export const style = (enableDomStyle) => {
-  const cssUtilities = {
-    top: "top", bottom: "bottom", left: "left", right: "right",
-    width: "width", height: "height", padding: "padding",
-    paddingTop: "paddingTop", paddingBottom: "paddingBottom",
-    paddingLeft: "paddingLeft", paddingRight: "paddingRight",
-    margin: "margin", marginTop: "marginTop",
-    marginBottom: "marginBottom", marginLeft: "marginLeft",
-    marginRight: "marginRight", borderRadius: "borderRadius",
-    fontSize: "fontSize", lineHeight: "lineHeight",
-    screenHeight: "height", textColor: "color",
-    bgColor: "backgroundColor", fontWeight: "fontWeight",
-    display: "display", flex: "flex", justifyContent: "justifyContent",
-    alignItems: "alignItems", flexWrap: "flexWrap",
-    flexDirection: "flexDirection", filter: "filter",
-    position: "position", overflow: "overflow", listStyle: "listStyle",
-    objectFit: "objectFit", objectPosition: "objectPosition",
-    borderWidth: "borderWidth", borderStyle: "borderStyle",
-    borderColor: "borderColor", textAlign: "textAlign",
+  const typography = {
+    font: "fontFamily",
+    fontSize: "fontSize",
     fontStyle: "fontStyle",
+    fontWeight: "fontWeight",
+    lineHeight: "lineHeight",
+    listStyle: "listStyle",
+    textAlign: "textAlign",
+    textColor: "color",
+    textDecorationColor: "textDecorationColor",
+    textDecoration: "textDecoration",
+    textOverflow: "textOverflow",
+    textTransform: "textTransform",
+    whiteSpace: "whiteSpace",
+    wordWrap: "wordWrap",
+  };
+  
+  const layouts = {
+    bottom: "bottom",
+    display: "display",
+    left: "left",
+    objectFit: "objectFit",
+    objectPosition: "objectPosition",
+    overflow: "overflow",
+    position: "position",
+    right: "right",
+    top: "top",
+    visibility: "visibility",
+  };
+  
+  const interactivity = {
+    userSelect: "userSelect",
+    cursor: "cursor",
+  };
+  
+  const flex = {
+    alignItems: "alignItems", 
+    flexDirection: "flexDirection",
+    flex: "flex",
+    flexWrap: "flexWrap",
+    justifyContent: "justifyContent",
+  };
+  
+  const backgrounds = {
+    bgColor: "backgroundColor", 
+    opacity: "opacity",
+  };
+  
+  const borders = {
+    borderColor: "borderColor",
+    borderRadius: "borderRadius",
+    borderStyle: "borderStyle",
+    borderWidth: "borderWidth",
+  };
+  
+  const spacing = {
+    marginBottom: "marginBottom",
+    marginLeft: "marginLeft",
+    margin: "margin",
+    marginRight: "marginRight",
+    marginTop: "marginTop",
+    paddingBottom: "paddingBottom",
+    paddingLeft: "paddingLeft",
+    padding: "padding",
+    paddingRight: "paddingRight",
+    paddingTop: "paddingTop",
+  };
+  
+  const sizing = {
+    height: "height",
+    width: "width",
+    xHeight: "height",
+    xWidth: "width",
+  };
+  
+  const others = {
+    filter: "filter",
+    transition: "transition",
+  };
+  
+  const cssUtilities = { 
+    ...typography, 
+    ...layouts,
+    ...interactivity,
+    ...flex,
+    ...backgrounds,
+    ...borders,
+    ...spacing,
+    ...sizing,
+    ...others,
   };
 
   const observer = new MutationObserver((mutations, observer2) => {
@@ -306,20 +449,46 @@ export const style = (enableDomStyle) => {
   };
 
   const generateDomStyle = (className) => {
-    // utilities without em, rem, px units
     const notUnitUtils = [
-      "textColor", "bgColor", "display", "justifyContent",
-      "alignItems", "flexWrap", "flexDirection", "screenHeight",
-      "filter", "position", "objectFit", "objectPosition",
-      "borderwidth", "borderStyle", "borderColor", "textAlign",
-      "fontStyle", "listStyle",
+      "alignItems",
+      "bgColor",
+      "borderColor",
+      "borderStyle",
+      "borderwidth",
+      "cursor",
+      "display",
+      "filter",
+      "flexDirection",
+      "flexWrap",
+      "font",
+      "fontStyle",
+      "fontWeight",
+      "justifyContent",
+      "listStyle",
+      "objectFit",
+      "objectPosition",
+      "opacity",
+      "position",
+      "textAlign",
+      "textColor",
+      "textDecoration",
+      "textDecorationColor",
+      "textOverflow",
+      "textTransform",
+      "transition",
+      "userSelect",
+      "visibility",
+      "whiteSpace",
+      "wordWrap",
+      "xHeight",
+      "xWidth",
     ];
 
-    const classNameObjects = className.match(/(^[a-z-A-Z]{1,23})-([a-z-0-9(%)%]{1,23})?/);
+    const classNameObjects = className.match(/(^[a-z-A-Z]{1,23})-([a-z-A-Z-0-9-%-.(%)]{1,23})?/);
     const cssProperty = classNameObjects && cssUtilities[classNameObjects[1]];
     const utilClassName = classNameObjects[1];
     const utilClassValue = classNameObjects[2];
-    const unit = (classNameObjects && classNameObjects[3]) || "px" || "em";
+    const unit = (classNameObjects && classNameObjects[3]) || "px";
     // filter not unit utils
     if (notUnitUtils.indexOf(utilClassName) > -1) {
       return cssProperty && {
