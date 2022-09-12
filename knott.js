@@ -1,4 +1,42 @@
 /*
+ * Router API
+ * @param: {String} ...... path as page url
+ * @param: {String} ...... template id or page title
+ * @param: {Function} .... controller of template function
+ */
+// store route hash
+const routes = {};
+
+// route register
+export const route = (path, templateId, controller) => {
+  try {
+    routes[path] = {
+      templateId: templateId,
+      controller: controller
+    };
+  }
+  catch (error) { return error; }
+}
+
+// route initializer
+export const router = () => {
+  const routeWatcher = () => {
+    try {
+      let templateUrl = location.hash.slice(1) || '/';
+      let route = routes[templateUrl];
+      let templateTitle = route.templateId;
+      document.title = templateTitle;
+      let templateVNode = route.controller;
+      mount("root", render(templateVNode));
+      // init DOM style
+      style(true);
+    }
+    catch (error) { return error; }
+  }
+  window.addEventListener('hashchange', routeWatcher);
+  window.addEventListener('load', routeWatcher);
+}
+/*
  * Create Element API
  * @param: {String} .... selector
  * @param: {List} ...... props
@@ -35,11 +73,11 @@ export const craft = (
 ) => {
   const virtualElement = Object.create(null);
   Object.assign(virtualElement, {
-    selector, props, style, text, 
+    selector, props, style, text,
     // options
     actions, tasks, toggle, hover, vdom,
     // data
-    keys, data, 
+    keys, data,
     // child
     html, expand,
   });
@@ -54,13 +92,12 @@ export const craft = (
  * @param: {List} ...... virtual node (See, Create Element API)
  */
 export const mount = (id, virtualNode) => {
-  let addElement = document.getElementById(id);
-  if (addElement) {
-    addElement.replaceWith(virtualNode);
+  let targetElement = document.getElementById(id);
+  if (targetElement) {
+    targetElement.replaceWith(virtualNode);
     return virtualNode;
   }
 };
-
 /*
  * UnMount (LifeCycle) API
  * Remove child (DOM) element from the page invisible on browser
@@ -80,18 +117,18 @@ export const unmount = (id) => {
  * @param: {List} .... virtual nodes (See, Create Element API)
  */
 const renderElement = ({
-  selector, props, style, text, 
+  selector, props, style, text,
   // options
   actions, tasks, toggle, hover, vdom,
   // data
-  keys, data, 
+  keys, data,
   // child
   html, expand,
 }) => {
   const $element = document.createElement(selector);
   /*
    * Element Attributes
-   * @params {List} .... usage, props: { class: `` } 
+   * @params {List} .... usage, props: { class: `` }
    * @note: use `` for data binding
    */
   for (const [pKey, pValue] of Object.entries(props)) {
@@ -176,8 +213,8 @@ const renderElement = ({
    * @params {duration} .... transition time 0.1s to 1s
    */
   if (hover) {
-    hover.map(([id, mode = "block",  opacity = "0.6", duration = "0.3s"]) => {
-      if(mode === "block") {
+    hover.map(([id, mode = "block", opacity = "0.6", duration = "0.3s"]) => {
+      if (mode === "block") {
         $element.addEventListener("mouseover", () => {
           const bmo = document.getElementById(id);
           bmo.style.display = mode;
@@ -189,7 +226,7 @@ const renderElement = ({
           bmot.style.opacity = "1";
         });
       }
-      if(mode === "visible") {
+      if (mode === "visible") {
         $element.addEventListener("mouseover", () => {
           const vmo = document.getElementById(id);
           vmo.style.visibility = mode;
@@ -201,6 +238,13 @@ const renderElement = ({
       }
     });
   }
+  /*
+   * Tasks (LifeCycle)
+   * Custom function call after component is mounted.
+   * @params {Func} ... function call
+   */
+  // TODO: is-mounted, before-mounted, after-mounted
+  if (typeof tasks === "function") { return tasks; }
   /*
    * Element DOM Properties
    * @params {Bool} ...... set `true` to display on console
@@ -235,21 +279,26 @@ const compress = (xs, ys) => {
 
 const diffProps = (oldProps, newProps) => {
   const patches = [];
-  for (const [key, value] of Object.entries(newProps)) {
-    patches.push(($node) => {
-      $node.setAttribute(key, value);
+
+  // setting newProps
+  for (const [kk, vv] of Object.entries(newProps)) {
+    patches.push($node => {
+      $node.setAttribute(kk, vv);
       return $node;
     });
   }
-  for (const key in oldProps) {
-    if (!(key in newProps)) {
-      patches.push(($node) => {
-        $node.removeAttribute(key);
+
+  // removing attrs
+  for (const kk in oldProps) {
+    if (!(kk in newProps)) {
+      patches.push($node => {
+        $node.removeAttribute(kk);
         return $node;
       });
     }
   }
-  return ($node) => {
+
+  return $node => {
     for (const patch of patches) {
       patch($node);
     }
@@ -257,19 +306,21 @@ const diffProps = (oldProps, newProps) => {
   };
 };
 
-const diffChildren = (oldVChildren, newVChildren) => {
+const diffExpand = (oldVChildren, newVChildren) => {
   const childPatches = [];
   oldVChildren.forEach((oldVChild, i) => {
     childPatches.push(diff(oldVChild, newVChildren[i]));
   });
+
   const additionalPatches = [];
   for (const additionalVChild of newVChildren.slice(oldVChildren.length)) {
-    additionalPatches.push(($node) => {
+    additionalPatches.push($node => {
       $node.appendChild(render(additionalVChild));
       return $node;
     });
   }
-  return ($parent) => {
+
+  return $parent => {
     for (const [patch, $child] of compress(childPatches, $parent.childNodes)) {
       patch($child);
     }
@@ -282,24 +333,26 @@ const diffChildren = (oldVChildren, newVChildren) => {
 
 export const diff = (oldVTree, newVTree) => {
   if (newVTree === undefined) {
-    return ($node) => {
+    return $node => {
       $node.remove();
       return undefined;
-    };
+    }
   }
-  if (typeof oldVTree === "string" || typeof newVTree === "string") {
+
+  if (typeof oldVTree === 'string' || typeof newVTree === 'string') {
     if (oldVTree !== newVTree) {
-      return ($node) => {
+      return $node => {
         const $newNode = render(newVTree);
         $node.replaceWith($newNode);
         return $newNode;
       };
     } else {
-      return ($node) => $node;
+      return $node => $node;
     }
   }
+
   if (oldVTree.selector !== newVTree.selector) {
-    return ($node) => {
+    return $node => {
       const $newNode = render(newVTree);
       $node.replaceWith($newNode);
       return $newNode;
@@ -307,22 +360,21 @@ export const diff = (oldVTree, newVTree) => {
   }
 
   const patchProps = diffProps(oldVTree.props, newVTree.props);
-  const patchChildren = diffChildren(oldVTree.expand, newVTree.expand);
+  const patchExpand = diffExpand(oldVTree.expand, newVTree.expand);
 
-  return ($node) => {
+  return $node => {
     patchProps($node);
-    patchChildren($node);
+    patchExpand($node);
     return $node;
   };
 };
-
 /*
  * Register Service Worker (PWA)
  * Use SW to cache static assets for offline access.
  * @params {List} .... set `true` to enable, see file `sw.js`
  */
 export const pwa = (enableSW) => {
-  if(enableSW === true) {
+  if (enableSW === true) {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
@@ -335,7 +387,7 @@ export const pwa = (enableSW) => {
 }
 
 /*
- * DOM CSS Utilities
+ * DOM CSS Utilities API
  * A functional low-level DOM CSS styler without CSS payload.
  * @params {Bool} .... set `true` to enable DOM styling
  */
@@ -356,7 +408,7 @@ export const style = (enableDomStyle) => {
     whiteSpace: "whiteSpace",
     wordWrap: "wordWrap",
   };
-  
+
   const layouts = {
     bottom: "bottom",
     display: "display",
@@ -369,32 +421,32 @@ export const style = (enableDomStyle) => {
     top: "top",
     visibility: "visibility",
   };
-  
+
   const interactivity = {
     userSelect: "userSelect",
     cursor: "cursor",
   };
-  
+
   const flex = {
-    alignItems: "alignItems", 
+    alignItems: "alignItems",
     flexDirection: "flexDirection",
     flex: "flex",
     flexWrap: "flexWrap",
     justifyContent: "justifyContent",
   };
-  
+
   const backgrounds = {
-    bgColor: "backgroundColor", 
+    bgColor: "backgroundColor",
     opacity: "opacity",
   };
-  
+
   const borders = {
     borderColor: "borderColor",
     borderRadius: "borderRadius",
     borderStyle: "borderStyle",
     borderWidth: "borderWidth",
   };
-  
+
   const spacing = {
     marginBottom: "marginBottom",
     marginLeft: "marginLeft",
@@ -407,21 +459,21 @@ export const style = (enableDomStyle) => {
     paddingRight: "paddingRight",
     paddingTop: "paddingTop",
   };
-  
+
   const sizing = {
     height: "height",
     width: "width",
     xHeight: "height",
     xWidth: "width",
   };
-  
+
   const others = {
     filter: "filter",
     transition: "transition",
   };
-  
-  const cssUtilities = { 
-    ...typography, 
+
+  const cssUtilities = {
+    ...typography,
     ...layouts,
     ...interactivity,
     ...flex,

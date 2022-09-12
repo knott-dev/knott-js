@@ -1,7 +1,7 @@
 {
   "name": "knott",
-  "version": "0.1.4",
-  "description": "A tiny Virtual DOM web component and styling library for the basic web.",
+  "version": "0.1.5",
+  "description": "Web Component, DOM Styling, and Virtual DOM for the basic web.",
   "main": "knott.js",
   "keywords": [
     "web-component",

@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/louislow81/knott.js/e832386075591d7ad4e42b7703e46836d2ca5988/knott-logo.svg" width="200px" alt="Knott JS">
 </p>
 
-## A tiny Virtual DOM web component and styling library for the basic web.
+# Web Component, DOM Styling, and Virtual DOM for the basic web.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/knott.svg)](https://badge.fury.io/js/knott)
@@ -11,9 +11,11 @@
 
 # Introduction
 
-`Knott.JS` is a tiny **Virtual DOM** JavaScript library for creating object-based web components it's called **virtual nodes** with very basic necessary features to build a simple web application or website.
+`Knott.JS` is a tiny (4 kilobytes) **Virtual DOM** JavaScript library for creating object-based web components it's called **virtual nodes** that everything is run on the memory, it's fast!
 
-# Menu
+And, one more thing, no CSS for sure. That is **DOM Styling Utilities** came with the same package. Almost infinite modifier for just one utility. A very basic feature is capable to build simple web apps or websites.
+
+# Features / Menu
 
 - [Create Element](#craft)
 - [Virtual Node](#virtual-node)
@@ -25,7 +27,8 @@
 - [UnMount Component](#unmount-component)
 - [Data Binding](#data-binding)
 - [Iteration](#iteration)
-- [Show/Hide Component](#showhide-component-with-click-handler)
+- [Routing](#routing)
+- [Show / Hide Component](#showhide-component-with-click-handler)
 - [DOM Styling](#dom-styling)
 - [Service Worker](#service-worker)
 
@@ -40,34 +43,35 @@ Use `craft()` to create virtual nodes commonly everywhere in the project. It tak
 ```mjs
 import { craft } from "knott";
 
-craft(
-  selector, {
-    // attributes
-    props {
-      id: "",
-      class: "",
-      style: "",
-      // any...
-    },
-    // options
-    text: "TEXT",
-    html: `<p></p>`,
-    data: [ { a: "1" }, { a: "2" } ],
-    keys: ["A","B"],
-    toggle: "id",
-    hover: [ ["id"] ],
-    actions: [
-      [action, event, ()=>{ f() }],
-    ],
-    tasks: [ f() ],
-    expand: [
-      slotComponent,
-      customFunction,
-      craft(),
-      // and so on...
-    ],
-  }
-);
+const newComponent = (props) =>
+  craft(
+    selector, {
+      // attributes
+      props {
+        id: "",
+        class: "",
+        style: "",
+        // any...
+      },
+      // options
+      text: "TEXT",
+      html: `<p></p>`,
+      data: [ { a: "1" }, { a: "2" } ],
+      keys: ["A","B"],
+      toggle: "id",
+      hover: [ ["id"] ],
+      actions: [
+        [action, event, ()=>{ f() }],
+      ],
+      tasks: [ f() ],
+      expand: [
+        slotComponent,
+        customFunction,
+        craft(),
+        // and so on...
+      ],
+    }
+  );
 ```
 | Keys | Params | Descriptions |
 |:-|:-|:-|
@@ -98,7 +102,7 @@ craft("div", props: { style:"color-red" }, text: "Welcome!");
 craft("top-header-container", html: `<div class="...">Welcome!</div>`);
 ```
 
-Create a component with children element within a parent element.
+Create a component with children element within a parent element with `expand:`.
 
 ```mjs
 craft("div", // parent
@@ -115,66 +119,84 @@ craft("div", // parent
 
 An virtual node with element is rendered into actual document to display on browser is using `render()` and mounted with `mount()` as component taken one element ID.
 
-### Example #1
+> **Example 1:** Recommended writting.
 
 ```mjs
+// Example #1
+
 // app.js
 import { craft, mount, render } from "knott";
 
-const vNode = craft(
-  "div", {
+const vNode = () =>
+  craft("div", {
     props {
       class: "text-xs",
-      style: "background:red; color:white",
+      style: "color:white",
     },
     text = "This is Text!",
-  }
-);
+  });
 
-// Output as <div id="app">
-mount("app", render(vNode));
+// render as...
+// <div class="..." style="...">...</div>
+mount("app", render(vNode()));
 ```
 
-### Example #2
+> **Example 2:** Shorthand writing.
 
 ```mjs
+// Example #2
+
 // app.js
 import { craft, mount, render } from "knott";
 
-// Output as <div id="app">
+// render as...
+// <div class="..." style="...">...</div>
 mount("app", render(
-  craft(
-    "div", {
-      props {
-        class: "text-xs",
-        style: "background:red; color:white",
-      },
-      text = "This is Text!",
-    }
-  );
+  craft("div", {
+    props {
+      class: "text-xs",
+      style: "color:white",
+    },
+    text: "This is Text!",
+  });
+));
+```
+
+> **Example 3:** The `html:` is treated as a single object acting as an injection for the parent element.
+
+```mjs
+// Example #3
+
+// app.js
+import { craft, mount, render } from "knott";
+
+// render as <div><p>Text</p></div>
+mount("app", render(
+  craft("div", {
+    html: `<p>Text</p>`,
+  });
 ));
 ```
 
 ## Create Component
 
-Create new component named `largeCard` and export with the same example `largeCard` name.
+Create a new component named `largeCard` and export with the same example `largeCard` name.
 
 ```mjs
 // component-a.js
 import { craft } from "knott";
 
-const largeCard = craft(
-  "div", {
+const largeCard = () =>
+   craft("div", {
     text: "Large Card",
-  }
-);
+  });
 
 export { largeCard };
 ```
 
 ## Import Component
 
-Import component file as module and reuse it anywhere in the project.
+Import component files as a module and reuse them anywhere in the project.
 
 ```mjs
 // app.js
@@ -226,17 +248,16 @@ const newComponent = (
 // component.js
 import { craft } from "knott";
 
-const alertButton = craft(
-  "div", {
+const alertButton = () =>
+  craft("div", {
     text: "Click Me!",
     actions: [
-      ["add", "click", ()=>{ alert("Clicked Event") }],
-      ["addWindow", "click", ()=>{ alert("Clicked Event") }],
-      ["remove", "click", ()=>{ alert("Clicked Event") }],
-      ["removeWindow", "click", ()=>{ alert("Clicked Event") }],
+      ["add", "click", () => { alert("Clicked Event") }],
+      ["addWindow", "click", () => { alert("Clicked Event") }],
+      ["remove", "click", () => { alert("Clicked Event") }],
+      ["removeWindow", "click", () => { alert("Clicked Event") }],
     ],
-  }
-);
+  });
 
 export { alertButton };
 ```
@@ -253,29 +274,27 @@ An example to **display** additional component by using `mount()` when a text cl
 // component.js
 import { craft, mount, render } from "knott";
 
-const panelA = craft(
-  "div", {
+const panelA = () =>
+  craft("div", {
     props: {
       id: "idPanelA",
     },
     text: "This is Panel A. Click Me!",
     actions: [
-      ["add", "click", ()=> { // or
+      ["add", "click", () => { // or
         mount("idPanelA", render(panelB));
       }],
     ],
     tasks: [ // or
       mount("idPanelA", render(panelB))
     ],
-  }
-);
+  });
 
 // to be added
-const panelB = craft(
-  "div", {
+const panelB = () =>
+  craft("div", {
     text: "Panel B is appeared!",
-  }
-);
+  });
 
 export { panelA };
 ```
@@ -286,17 +305,17 @@ export { panelA };
 |:-|:-|
 | `unmount("id");` | remove (DOM) element from the page invisible on browser viewport. |
 
-An example to remove component or element node from DOM with `unmount()`.
+An example is to remove the component or element node from DOM with `unmount()`.Extend more options of a reusable component.
 
 ```mjs
 // component.js
 import { craft, mount, unmount, render } from "knott";
 
-const panelA = craft(
-  "div", {
+const panelA = () =>
+   craft("div", {
     text: "Click Me to remove Panel B",
     actions: [ // or
-      ["add", "click", ()=> {
+      ["add", "click", () => {
         unmount("idPanelB");
       }],
     ],
@@ -314,17 +333,16 @@ const panelA = craft(
         }
       );
     ],
-  }
-);
+  });
 
 export { panelA };
 ```
 
 ## Data Binding
 
-### Example #1
-
 ```mjs
+// Example #1
+
 // component.js
 const css = "font-bold";
 const text = "Welcome to Knott JS!";
@@ -338,9 +356,9 @@ const newCard = (css, text) =>
   });
 ```
 
-### Example #2
-
 ```mjs
+// Example #2
+
 // component.js
 const css = "font-bold";
 const text = "Knott JS!";
@@ -354,9 +372,9 @@ const newCard = (css, text) =>
   });
 ```
 
-### Example #3
-
 ```mjs
+// Example #3
+
 // component.js
 const css = "font-bold";
 const text = "Knott JS!";
@@ -375,7 +393,7 @@ const newCard = (css, text) =>
 
 | Keys | Params | Descriptions |
 |:-|:-|:-|
-| **actions** | `[[mode, event, function]]` | create event listener to an element to call function(s) when clicked or onload. |
+| **actions** | `[[mode, event, function]]` | create an event listener to an element to call function(s) when clicked or onload. |
 
 ```mjs
 // component.js
@@ -384,28 +402,81 @@ const images = [
   { url: "https://example.com/example-two.png" },
 ];
 
-const logos = () => craft("partner-logos", {
-  actions: [
-    ["addWindow", "load", ()=> {
-      // loop
-      images.forEach((item) => {
-        const l = document.createElement("div");
-        l.innerHTML = `
-          <img
-            class="height-6 width-full filter drop-shadow-md"
-            src="${item.url}"
-            alt=""
-            loading="lazy"
-          />
-        `;
-        document
-          .querySelector("partner-logos")
-          .appendChild(l);
-      });
-      //...
-    }],
-  ]
+const logos = () =>
+  craft("partner-logos", {
+    actions: [
+      ["addWindow", "load", () => {
+        // loop
+        images.forEach((item) => {
+          const l = document.createElement("div");
+          l.innerHTML = `
+            <img
+              class="height-6 width-full filter drop-shadow-md"
+              src="${item.url}"
+              alt=""
+              loading="lazy"
+            />
+          `;
+          document
+            .querySelector("partner-logos")
+            .appendChild(l);
+        });
+        //...
+      }],
+    ]
+  });
+```
+
+### Routing
+
+_Knott.js_ keeps the routing as simple as possible, just a basic alias in between the **path** (page url), **page title** (or page id), and **template component**. Use `router()` without refreshing pages, page loading almost instantly.
+
+| Function | Params | Descriptions |
+|:-|:-|:-|
+| **route()** | `path` | url (e.g. "/", "/about", "/food/breads")|
+| | `template` | page id or page title |
+| | `controller` | template page function call (e.g. "/#/about") |
+
+> **Example #1:** Basic how to use the router.
+
+```mjs
+// Example #1
+
+// app.js
+import { route, router } from "knott";
+
+const homePage = () => craft("div", { text: "Home Page" });
+
+route("/", "Home", homePage);
+
+router(); // init
+```
+> **Example #2:** Write more elegantly, organize pages with objects.
+```mjs
+// Example #2
+
+// app.js
+import { route, router } from "knott";
+
+import { homePage } from "./home";
+import { fruitsPage, breadsPage } from "./foods";
+
+const pages = [ // example.com/#/fruits
+  { path: "/", title: "Home", template: homePage },
+  { path: "/fruits", title: "Fruits", template: fruitsPage },
+  { path: "/breads", title: "Breads", template: breadsPage },
+];
+
+pages.forEach((alias) => {
+  route(
+    alias.path,
+    alias.title,
+    alias.template
+  );
 });
+
+// init
+router();
 ```
 
 ## Show/Hide Component with Click Handler
@@ -416,17 +487,19 @@ const logos = () => craft("partner-logos", {
 
 ```mjs
 // component.js
-const newButton = craft("button", {
-  text: "Click Me!"
-  toggle: "modal",
-});
+const newButton = () =>
+  craft("button", {
+    text: "Click Me!"
+    toggle: "modal",
+  });
 
-const newModal = craft("div", {
-  props: {
-    id: "modal",
-  },
-  text: "This is a Modal"
-});
+const newModal = () =>
+  craft("div", {
+    props: {
+      id: "modal",
+    },
+    text: "This is a Modal"
+  });
 ```
 
 ## Hover Effect
@@ -437,13 +510,14 @@ const newModal = craft("div", {
 
 ```mjs
 // component.js
-const newButton = craft("button", {
-  props: {
-    id: "testButton"
-  }
-  text: "Hover Me!"
-  hover: [["testButton"]]],
-});
+const newButton = () =>
+  craft("button", {
+    props: {
+      id: "testButton"
+    }
+    text: "Hover Me!"
+    hover: [["testButton"]],
+  });
 ```
 
 # Styling
@@ -519,23 +593,24 @@ Set `style()` to **true** to enable functional low-level CSS styling **without w
 
 Enable `style()` and set to `true` to use built-in DOM style CSS utilities.
 
-### Example #1
-
 ```mjs
+// Example #1
+
 // app.js
 import { style } from "knott";
 
+// init
 style(true); // should execute after the `mount()`
 ```
 
-### Example #2
-
 ```mjs
+// Example #2
+
 // app.js
 import { craft, mount, render, style } from "knott";
 
-const main = craft(
-  "body", {
+const main = () =>
+  craft("body", {
     props: {
       id: "root",
       class: "display-flex justifyContent-center alignItems-center",
@@ -546,23 +621,24 @@ const main = craft(
     ]
   });
 
-mount("root", render(main));
+mount("root", render(main()));
 
+// init
 style(true); // should execute after the `mount()`
 ```
 
-### Example #3
-
-Create basic CSS style reset.
+Create basic and minimal CSS style reset or normalizer.
 
 ```mjs
+// Example #3
+
 // app.js
 import { craft, mount, render, style } from "knott";
 
 const cssReset = `padding-0 margin-0 listStyle-none fontSize-16`;
 
-const main = craft(
-  "body", {
+const main = () =>
+  craft("body", {
     props: {
       id: "root",
       class: `${cssReset} display-flex justifyContent-center alignItems-center`,
@@ -573,16 +649,17 @@ const main = craft(
     ]
   });
 
-mount("root", render(main));
+mount("root", render(main()));
 
+// init
 style(true); // should execute after the `mount()`
 ```
-
-### Example #4
 
 Create a group of complex style and reuse them anywhere in the project.
 
 ```mjs
+// Example #4
+
 // style.js
 const reset = "margin-0 padding-0 listStyle-none fontSize-16 textColor-black bgColor-white"; // normalizer
 
@@ -602,16 +679,18 @@ import {
 
 Enable [PWA](https://web.dev/learn/pwa/) service worker to store app assets in browser for offline access.
 
-### Example
-
 Import `pwa()` module from `knott` and set parameter to `true`.
 
 ```mjs
+// Example #1
+
 // app.js
 import { pwa } from "knott";
 
-pwa(true);
+// init
+pwa(true); // should execute after the `mount()`
 ```
+
 Create a new separate file named `sw.js` at the root of the project directory and, add below lines. Edit **CacheName** and **CacheAssets** to suit your need.
 
 ```mjs
@@ -625,23 +704,6 @@ const cacheAssets = [
   "/assets/app.css",
 ];
 
-// BEYOND THIS LINE, DO NOT EDIT !!!
-
-self.addEventListener("install", installEvent => {
-  installEvent.waitUntil(
-    caches.open(cacheName).then(cache => {
-      cache.addAll(cacheAssets)
-    })
-  );
-});
-
-self.addEventListener("fetch", fetchEvent => {
-  fetchEvent.respondWith(
-    caches.match(fetchEvent.request).then(res => {
-      return res || fetch(fetchEvent.request)
-    })
-  );
-});
 ```
 
 ---
