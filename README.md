@@ -3,7 +3,7 @@
 > Thanks for support and feedback!
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/louislow81/knott.js/e832386075591d7ad4e42b7703e46836d2ca5988/knott-logo.svg" width="200px" alt="Knott JS">
+  <img src="https://raw.githubusercontent.com/knott-dev/knott-js/main/banner.png" width="auto" alt="Knott JS">
 </p>
 
 # Web Component, Styling, and Virtual DOM.
