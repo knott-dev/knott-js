@@ -4,8 +4,7 @@
  * @param: {String} ...... template id or page title
  * @param: {Function} .... controller of template function
  */
-// store route hash
-const routes = {};
+const routes = {}; // store route hash
 
 // route register
 export const route = (path, templateId, controller) => {
@@ -19,17 +18,19 @@ export const route = (path, templateId, controller) => {
 }
 
 // route initializer
-export const router = () => {
+export const router = (mountElemId = "root") => {
   const routeWatcher = () => {
     try {
       let templateUrl = location.hash.slice(1) || '/';
       let route = routes[templateUrl];
+      
       let templateTitle = route.templateId;
       document.title = templateTitle;
-      let templateVNode = route.controller;
-      mount("root", render(templateVNode));
-      // init DOM style
-      style(true);
+
+      let masterTemplateVNode = route.controller;
+      mount(mountElemId, render(masterTemplateVNode)); 
+
+      style(true);      
     }
     catch (error) { return error; }
   }
@@ -189,6 +190,11 @@ const renderElement = ({
       }
     });
   }
+  /*
+   * Element Function Call
+   * @params {Func} .... usage, tasks: [],
+   */
+  if (typeof tasks === "function") { return tasks; };
   /*
    * Element Toggle
    * @params {id} ...... element id
@@ -495,12 +501,12 @@ export const style = (enableDomStyle) => {
   const styleElement = (element) => {
     const classNames = element && element.className && element.className.split(" ") || [];
     classNames.forEach((className) => {
-      const style2 = generateDomStyle(className);
-      style2 && style2.key && (element.style[style2.key] = style2.value);
+      const cssObject = extractStyleObjects(className);
+      return cssObject && cssObject.key && (element.style[cssObject.key] = cssObject.value);
     });
   };
 
-  const generateDomStyle = (className) => {
+  const extractStyleObjects = (className) => {
     const notUnitUtils = [
       "alignItems",
       "bgColor",
