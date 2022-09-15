@@ -195,56 +195,7 @@ const renderElement = ({
    * @params {Func} .... usage, tasks: [],
    */
   if (typeof tasks === "function") { return tasks; };
-  /*
-   * Element Toggle
-   * @params {id} ...... element id
-   */
-  if (toggle) {
-    $element.addEventListener("click", () => {
-      const t = document.getElementById(toggle);
-      if (t.style.display === "none") {
-        t.style.display = "block";
-        // fix missing element styles
-        t.removeAttribute("style");
-      } else {
-        t.style.display = "none";
-      }
-    });
-  }
-  /*
-   * Element Hover
-   * @params {id} .......... element id
-   * @params {mode} ........ set `block` or `visible` style
-   * @params {opacity} ..... value 0.9 to 1
-   * @params {duration} .... transition time 0.1s to 1s
-   */
-  if (hover) {
-    hover.map(([id, mode = "block", opacity = "0.6", duration = "0.3s"]) => {
-      if (mode === "block") {
-        $element.addEventListener("mouseover", () => {
-          const bmo = document.getElementById(id);
-          bmo.style.display = mode;
-          bmo.style.opacity = opacity;
-          bmo.style.transition = duration;
-        });
-        $element.addEventListener("mouseout", () => {
-          const bmot = document.getElementById(id);
-          bmot.style.opacity = "1";
-        });
-      }
-      if (mode === "visible") {
-        $element.addEventListener("mouseover", () => {
-          const vmo = document.getElementById(id);
-          vmo.style.visibility = mode;
-        });
-        $element.addEventListener("mouseout", () => {
-          const vmot = document.getElementById(id);
-          vmot.style.visibility = "hidden";
-        });
-      }
-    });
-  }
-  /*
+   /*
    * Tasks (LifeCycle)
    * Custom function call after component is mounted.
    * @params {Func} ... function call
@@ -576,4 +527,31 @@ export const style = (enableDomStyle) => {
     }
   }
 };
+/*
+ * Helpers
+ */
+export const toggleById = (id, classlist) => {
+  classlist.forEach((item) => {
+    document
+      .getElementById(id)
+      .classList.toggle(item);
+ });
+}
+
+export const toggleBySelector = (selector, classlist) => {
+  classlist.forEach((item) => {
+    document
+      .querySelector(selector)
+      .classList.toggle(item);
+ });
+}
+
+export const toggleByIdSelector = (id, selector, classlist) => {
+  classlist.forEach((item) => {
+    document
+      .getElementById(id)
+      .querySelector(selector)
+      .classList.toggle(item);
+ });
+}
 
