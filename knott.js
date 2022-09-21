@@ -1,52 +1,45 @@
-export const knott = () => {};
 // TODO: Experiemental
-knott.lifecycle = ({ data=[], state=[], component=[], beforeMounted=[], mounted=[], afterMounted=[] }) => {
-  if (typeof data === 'object') { return data; }
-  if (typeof state === 'object') { return state; }
-  if (typeof component === 'function') { return component; }
-  // DOM lifecycle
-  if (typeof beforeMounted === 'function') { 
-      document.addEventListener("beforeunload", () => {
-      console.log("beforeMounted:", beforeMounted);
-      return beforeMounted;
-    });
-  }
-  if (typeof mounted === 'function') { 
-    //document.addEventListener("DOMContentLoaded", () => {
-      //console.log("mounted:", mounted);
-      return mounted; 
-    //});
-  }
-  if (typeof afterMounted === 'function') { 
-    document.addEventListener("unload", () => {
-      console.log("afterMounted:", afterMounted);
-        return afterMounted; 
-    });
-  }
-  if(data !== "object") {
-    throw "error: not data object"
-  }
+export const lifecycle = ({
+  data: data,
+  state: state,
+  component: component,
+  beforeMounted: beforeMounted,
+  mounted: mounted,
+  afterMounted: afterMounted,
+  onBeforeUnloaded: onBeforeUnloaded,
+  onloaded: onloaded,
+  onAfterUnloaded: onAfterUnloaded,
+}) => {
+  if (typeof data === "object" || typeof data === "array") { return data; }
+  if (typeof state === "object" || typeof data === "array") { return state; }
+  if (typeof component === "function") { return component; }
+  if (typeof beforeMounted === "function") { return beforeMounted; }
+  if (typeof mounted === "function") { return mounted; }
+  if (typeof afterMounted === "function") { return afterMounted; }
+  throw "error!";
 };
+
 /*
  * Router API
  * @param: {String} ...... path as page url
  * @param: {String} ...... template id or page title
  * @param: {Function} .... controller of template function
  */
+const routes = {}; // store route hash
+
 // route register
-knott.route = (path, templateId, controller) => {
+export const route = (path, templateId, controller) => {
   try {
-    const routes = {}; // store route hash
     routes[path] = {
       templateId: templateId,
       controller: controller
     };
   }
   catch (error) { return error; }
-}
+};
 
 // route initializer
-knott.router = (mountElemId = "root") => {
+export const router = (mountElemId = "root") => {
   const routeWatcher = () => {
     try {
       let templateUrl = location.hash.slice(1) || '/';
@@ -56,17 +49,18 @@ knott.router = (mountElemId = "root") => {
       document.title = templateTitle;
 
       let masterTemplateVNode = route.controller;
-      mount(mountElemId, knott.render(masterTemplateVNode)); 
+      mount(mountElemId, render(masterTemplateVNode)); 
 
-      knott.style(true);      
+      style(true);      
     }
     catch (error) { return error; }
   }
   window.addEventListener('hashchange', routeWatcher);
   window.addEventListener('load', routeWatcher);
-}
+};
+
 /*
- * Create Element API, c();
+ * Create Element API
  * @param: {String} .... selector
  * @param: {List} ...... props
  * @param: {String}..... style
@@ -81,7 +75,7 @@ knott.router = (mountElemId = "root") => {
  * @param: {List} ...... expand
  * @param: {Bool} ...... vdom
  */
-knott.craft = (
+export const craft = (
   selector, {
     props = {},
     style = "",
@@ -114,26 +108,27 @@ knott.craft = (
 };
 
 /*
- * Mount (LifeCycle) API, m();
+ * Mount (LifeCycle) API
  * Deliver real (DOM) elements on the page visible on browser viewport.
  * Note: New virtual node has to be mounted with id="".
  * @param: {String} .... target element id
  * @param: {List} ...... virtual node (See, Create Element API)
  */
-knott.mount = (id, virtualNode) => {
+export const mount = (id, virtualNode) => {
   let targetElement = document.getElementById(id);
   if (targetElement) {
-    targetElement.replaceWith(knott.render(virtualNode));
+    targetElement.replaceWith(virtualNode);
     return virtualNode;
   }
 };
+
 /*
- * UnMount (LifeCycle) API, m();
+ * UnMount (LifeCycle) API
  * Remove child (DOM) element from the page invisible on browser
  * viewport.
  * @param: {String} .... target element id
  */
-knott.unmount = (id) => {
+export const unmount = (id) => {
   let removeElement = document.getElementById(id);
   if (removeElement) {
     removeElement.remove();
@@ -222,14 +217,14 @@ const renderElement = ({
    * Element Function Call
    * @params {Func} .... usage, tasks: [],
    */
-  if (typeof tasks === 'function') { return tasks; };
+  if (typeof tasks === "function") { return tasks; };
    /*
    * Tasks (LifeCycle)
    * Custom function call after component is mounted.
    * @params {Func} ... function call
    */
   // TODO: is-mounted, before-mounted, after-mounted
-  if (typeof tasks === 'function') { return tasks; }
+  if (typeof tasks === "function") { return tasks; }
   /*
    * Element DOM Properties
    * @params {Bool} ...... set `true` to display on console
@@ -239,12 +234,12 @@ const renderElement = ({
   }
   // expand children node
   for (const child of expand) {
-    $element.appendChild(knott.render(child));
+    $element.appendChild(render(child));
   }
   return $element;
 };
 
-knott.render = (virtualNode) => {
+export const render = (virtualNode) => {
   return renderElement(virtualNode);
 };
 
@@ -300,7 +295,7 @@ const diffExpand = (oldVChildren, newVChildren) => {
   const additionalPatches = [];
   for (const additionalVChild of newVChildren.slice(oldVChildren.length)) {
     additionalPatches.push($node => {
-      $node.appendChild(knott.render(additionalVChild));
+      $node.appendChild(render(additionalVChild));
       return $node;
     });
   }
@@ -316,7 +311,7 @@ const diffExpand = (oldVChildren, newVChildren) => {
   };
 };
 
-knott.diff = (oldVTree, newVTree) => {
+export const diff = (oldVTree, newVTree) => {
   if (newVTree === undefined) {
     return $node => {
       $node.remove();
@@ -327,7 +322,7 @@ knott.diff = (oldVTree, newVTree) => {
   if (typeof oldVTree === 'string' || typeof newVTree === 'string') {
     if (oldVTree !== newVTree) {
       return $node => {
-        const $newNode = knott.render(newVTree);
+        const $newNode = render(newVTree);
         $node.replaceWith($newNode);
         return $newNode;
       };
@@ -338,7 +333,7 @@ knott.diff = (oldVTree, newVTree) => {
 
   if (oldVTree.selector !== newVTree.selector) {
     return $node => {
-      const $newNode = knott.render(newVTree);
+      const $newNode = render(newVTree);
       $node.replaceWith($newNode);
       return $newNode;
     };
@@ -353,12 +348,13 @@ knott.diff = (oldVTree, newVTree) => {
     return $node;
   };
 };
+
 /*
  * Register Service Worker (PWA)
  * Use SW to cache static assets for offline access.
  * @params {List} .... set `true` to enable, see file `sw.js`
  */
-knott.pwa = (enableSW) => {
+export const pwa = (enableSW) => {
   if (enableSW === true) {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -369,14 +365,14 @@ knott.pwa = (enableSW) => {
       });
     }
   }
-}
+};
 
 /*
  * DOM CSS Utilities API
  * A functional low-level DOM CSS styler without CSS payload.
  * @params {Bool} .... set `true` to enable DOM styling
  */
-knott.style = (enableDomStyle) => {
+export const style = (initStyle) => {
   const typography = {
     font: "fontFamily",
     fontSize: "fontSize",
@@ -540,7 +536,7 @@ knott.style = (enableDomStyle) => {
     };
   }
 
-  if (enableDomStyle === true) {
+  if (initStyle === true) {
     const scope = window.document;
     const elements = scope.getElementsByTagName("*");
     for (let i in elements) {
@@ -555,31 +551,31 @@ knott.style = (enableDomStyle) => {
     }
   }
 };
+
 /*
  * Helpers
  */
-knott.toggleById = (id, classlist) => {
+export const toggleById = (id, classlist) => {
   classlist.forEach((item) => {
     document
       .getElementById(id)
       .classList.toggle(item);
  });
-}
+};
 
-knott.toggleBySelector = (selector, classlist) => {
+export const toggleBySelector = (selector, classlist) => {
   classlist.forEach((item) => {
     document
       .querySelector(selector)
       .classList.toggle(item);
  });
-}
+};
 
-knott.toggleByIdSelector = (id, selector, classlist) => {
+export const toggleByIdSelector = (id, selector, classlist) => {
   classlist.forEach((item) => {
     document
       .getElementById(id)
       .querySelector(selector)
       .classList.toggle(item);
  });
-}
-
+};

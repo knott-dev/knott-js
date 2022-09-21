@@ -13,9 +13,7 @@
 
 ## Introduction
 
-`Knott.JS` is a tiny (4 kilobytes) **Virtual DOM** JavaScript library for creating object-based web components it's called **virtual nodes** that everything is run on the memory, it's fast!
-
-And, one more thing, no CSS for sure. That is **DOM Styling Utilities** came with the same package. Almost infinite values in utility classes. A very basic feature is capable to build simple web apps or websites.
+**Knott** is a tiny (4 kilobytes) virtual dom library for building and styling fast, lightweight web components that everything runs on the memory, it's fast!
 
 [Read the documentation](https://knottjs.netlify.app)
 
@@ -35,7 +33,11 @@ Create an empty template to learn how to use `Knott.js` with CLI (command-line i
 $ npx knott-cli@latest my-new-knott-project
 ```
 
-[Read the documentation](https://knottjs.netlify.app)
+## Playground
+
+The [Playground](https://knottjs.netlify.app/playground/) is an online code editor, you can use it for testing or just playing around with `Knott.js` on the go. _If you don't find the **CLI** is more convenient._
+
+[**Launch Playground**](https://knottjs.netlify.app/playground/) now!
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
