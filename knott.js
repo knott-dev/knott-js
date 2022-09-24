@@ -44,14 +44,14 @@ export const router = (mountElemId = "root") => {
     try {
       let templateUrl = location.hash.slice(1) || '/';
       let route = routes[templateUrl];
-      
+
       let templateTitle = route.templateId;
       document.title = templateTitle;
 
       let masterTemplateVNode = route.controller;
-      mount(mountElemId, render(masterTemplateVNode)); 
+      mount(mountElemId, render(masterTemplateVNode));
 
-      style(true);      
+      style(true);
     }
     catch (error) { return error; }
   }
@@ -374,16 +374,26 @@ export const pwa = (enableSW) => {
  */
 export const style = (initStyle) => {
   const typography = {
+    columnCount: "columnCount",
+    columnFill: "columnFill",
+    columnGap: "columnGap",
+    columnSpan: "columnSpan",
+    columnWidth: "columnWidth",
+    columnRuleColor: "columnRuleColor",
+    columnRuleStyle: "columnRuleStyle",
+    columnRuleWidth: "columnRuleWidth",
     font: "fontFamily",
     fontSize: "fontSize",
     fontStyle: "fontStyle",
     fontWeight: "fontWeight",
+    letterSpacing: "letterSpacing",
     lineHeight: "lineHeight",
     listStyle: "listStyle",
     textAlign: "textAlign",
     textColor: "color",
-    textDecorationColor: "textDecorationColor",
-    textDecoration: "textDecoration",
+    textDecoColor: "textDecorationColor",
+    textDeco: "textDecoration",
+    textDirection: "direction",
     textOverflow: "textOverflow",
     textTransform: "textTransform",
     whiteSpace: "whiteSpace",
@@ -393,27 +403,43 @@ export const style = (initStyle) => {
   const layouts = {
     bottom: "bottom",
     display: "display",
+    float: "float",
     left: "left",
     objectFit: "objectFit",
     objectPosition: "objectPosition",
     overflow: "overflow",
+    overflowX: "overflowX",
+    overflowY: "overflowY",
     position: "position",
     right: "right",
     top: "top",
     visibility: "visibility",
+    zIndex: "zIndex",
   };
 
   const interactivity = {
     userSelect: "userSelect",
     cursor: "cursor",
+    outlineColor: "outlineColor",
+    outlineOffset: "outlineOffset",
+    outlineStyle: "outlineStyle",
+    outlineWidth: "outlineWidth",
+    resize: "resize",
+    scrollBehaviour: "scrollBehaviour",
   };
 
   const flex = {
+    alignContent: "alignContent",
     alignItems: "alignItems",
+    alignSelf: "alignSelf",
     flexDirection: "flexDirection",
     flex: "flex",
+    flexBasis: "flexBasis",
+    flexGrow: "flexGrow",
+    flexShrink: "flexShrink",
     flexWrap: "flexWrap",
     justifyContent: "justifyContent",
+    order: "order",
   };
 
   const backgrounds = {
@@ -444,6 +470,10 @@ export const style = (initStyle) => {
   const sizing = {
     height: "height",
     width: "width",
+    maxHeight: "maxHeight",
+    maxWidth: "maxWidth",
+    minHeight: "minHeight",
+    minWidth: "minWidth",
     xHeight: "height",
     xWidth: "width",
   };
@@ -451,6 +481,7 @@ export const style = (initStyle) => {
   const others = {
     filter: "filter",
     transition: "transition",
+    clip: "clip",
   };
 
   const cssUtilities = {
@@ -483,15 +514,26 @@ export const style = (initStyle) => {
 
   const extractStyleObjects = (className) => {
     const notUnitUtils = [
+      "alignContent",
       "alignItems",
+      "alignSelf",
       "bgColor",
       "borderColor",
       "borderStyle",
       "borderwidth",
+      "clip",
+      "columnCount",
+      "columnFill",
+      "columnRuleColor",
+      "columnRuleStyle",
+      "columnSpan",
       "cursor",
       "display",
       "filter",
+      "flexBasis",
       "flexDirection",
+      "flexGrow",
+      "flexShrink",
       "flexWrap",
       "font",
       "fontStyle",
@@ -501,11 +543,19 @@ export const style = (initStyle) => {
       "objectFit",
       "objectPosition",
       "opacity",
+      "outlineColor",
+      "outlineStyle",
+      "overflow",
+      "overflowX",
+      "overflowY",
       "position",
+      "resize",
+      "scrollBehaviour",
       "textAlign",
       "textColor",
       "textDecoration",
       "textDecorationColor",
+      "textDirection",
       "textOverflow",
       "textTransform",
       "transition",
@@ -515,6 +565,7 @@ export const style = (initStyle) => {
       "wordWrap",
       "xHeight",
       "xWidth",
+      "zIndex",
     ];
 
     const classNameObjects = className.match(/(^[a-z-A-Z]{1,23})-([a-z-A-Z-0-9-%-.(%)]{1,23})?/);
