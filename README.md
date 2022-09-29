@@ -6,7 +6,7 @@
   <img src="https://raw.githubusercontent.com/knott-dev/knott-js/main/banner.png" width="auto" alt="Knott JS">
 </p>
 
-# Web Component, Styling, and Virtual DOM.
+# Web Component, Virtual CSS, and Virtual DOM.
 
 [![npm version](https://badge.fury.io/js/knott.svg)](https://badge.fury.io/js/knott)
 [![npm downloads](https://img.shields.io/npm/dm/knott.svg)](https://www.npmjs.com/package/knott)

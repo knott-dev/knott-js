@@ -1,7 +1,7 @@
 {
   "name": "knott",
   "version": "0.1.8",
-  "description": "Web Component, DOM Styling, and Virtual DOM for the basic web.",
+  "description": "Web Component, Virtual CSS, and Virtual DOM for the basic web.",
   "main": "knott.js",
   "keywords": [
     "web-component",
@@ -14,5 +14,8 @@
   },
   "url": "https://github.com/knott-dev/knott-js/issues",
   "author": "Louis Low <knottjsdev@gmail.com> (https://github.com/knott-dev/knott-js)",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "artis": "*"
+  }
 }
