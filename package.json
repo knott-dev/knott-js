@@ -1,6 +1,6 @@
 {
   "name": "knott",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Web Component, DOM Styling, and Virtual DOM for the basic web.",
   "main": "knott.js",
   "keywords": [
@@ -9,10 +9,10 @@
     "vanilla-js"
   ],
   "repository": {
-    "url": "git+https://github.com/louislow81/knott.js.git",
+    "url": "git+https://github.com/knott-dev/knott-js.git",
     "type": "git"
   },
-  "url": "https://github.com/louislow81/knott.js/issues",
-  "author": "Louis Low <iamlouislow@gmail.com> (https://github.com/louislow81/knott.js)",
+  "url": "https://github.com/knott-dev/knott-js/issues",
+  "author": "Louis Low <knottjsdev@gmail.com> (https://github.com/knott-dev/knott-js)",
   "license": "MIT"
 }
