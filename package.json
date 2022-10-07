@@ -1,6 +1,6 @@
 {
   "name": "knott",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Web Component, Virtual CSS, and Virtual DOM for the basic web.",
   "main": "knott.js",
   "keywords": [

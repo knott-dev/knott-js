@@ -11,6 +11,6 @@ export * from "./helpers/toggles";
 
 export * from "./core/service-worker";
 
-// `style()` is removed from Knott since v0.1.8, use `Artis.js` instead.
+// `style()` is removed from Knott since v0.1.9, use `Artis.js` instead.
 // Documentation (https://artisjs.netlify.app)
-export { design } from "https://unpkg.com/artis@1.0.8/artis.js";
+export { design } from "https://unpkg.com/artis@1.0.9/artis.js";

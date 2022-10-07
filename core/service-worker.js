@@ -3,7 +3,7 @@
  * Use SW to cache static assets for offline access.
  * @params {List} .... set `true` to enable, see file `sw.js`
  */
-export const pwa = (enableSW) => {
+export const cache = (enableSW) => {
   if (enableSW === true) {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {

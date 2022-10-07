@@ -2,7 +2,7 @@
 
 import { mount } from "../core/mount";
 import { render } from "../core/render";
-import { design } from "https://unpkg.com/artis@1.0.5/artis.js";
+import { design } from "https://unpkg.com/artis@1.0.9/artis.js";
 
 /*
  * Router API
@@ -35,8 +35,8 @@ export const router = (mountElemId = "root") => {
 
       let masterTemplateVNode = route.controller;
       mount(mountElemId, render(masterTemplateVNode));
-      
-      // preload `artis.js` v1.0.5 for styling
+
+      // preload `artis.js` for styling
       design(true);
     }
     catch (error) { return error; }
